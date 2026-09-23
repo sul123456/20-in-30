@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { useTracker } from "@/lib/useTracker";
-import { makeLogic } from "@/lib/logic";
-import { APP_TITLE } from "@/lib/config";
-import Dashboard from "@/components/Dashboard";
-import VideoForm from "@/components/VideoForm";
+import { useTracker } from "@/useTracker";
+import { makeLogic } from "@/logic";
+import { APP_TITLE } from "@/config";
+import Dashboard from "@/Dashboard";
+import VideoForm from "@/VideoForm";
 
 export default function Home() {
   const { videos, statuses, loading, error, live, reload, saveVideo, loadHistory } = useTracker();
@@ -36,7 +36,7 @@ export default function Home() {
             <span className="brand-mark" aria-hidden="true" />
             <h1>{APP_TITLE}</h1>
           </div>
-          <span className={"live" + (live ? " on" : "")} title={live ? "Live: updates appear automatically" : "Connecting…"}>
+          <span className={"live" + (live ? " on" : "")} title={live ? "Live: updates appear automatically" : "Connectingâ€¦"}>
             <i />{live ? "Live" : "Connecting"}
           </span>
           <nav className="tabs" role="tablist">
@@ -54,7 +54,7 @@ export default function Home() {
 
       <main>
         {loading ? (
-          <div className="loading">Loading the tracker…</div>
+          <div className="loading">Loading the trackerâ€¦</div>
         ) : tab === "dashboard" ? (
           <Dashboard videos={videos} statuses={statuses} L={L} loadHistory={loadHistory}
             onEdit={(id) => { setOpenId(id); goTab("update"); }} />

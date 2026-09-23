@@ -28,6 +28,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
   const counts = { Completed: 0, "In Progress": 0, Pending: 0, Overdue: 0 };
   rows.forEach((v) => counts[L.overall(v)]++);
   const liveThisMonth = rows.filter((v) => v.go_live_date && v.go_live_date.slice(0, 7) === thisMonth()).length;
+  const wentLiveThisMonth = rows.filter((v) => v.go_live_date && v.go_live_date.slice(0, 7) === thisMonth() && v.stage_go_live === "Done").length;
   const avg = rows.length ? rows.reduce((t, v) => t + L.completion(v), 0) / rows.length : 0;
   const activeFilters = Object.values(filters).filter(Boolean).length;
   const statusNames = statuses.map((s) => s.name);
@@ -78,7 +79,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
       <section className="hero">
         <div>
           <p className="hero-head num">{pctText(avg)} <span>complete</span></p>
-          <p className="hero-sub">{counts.Completed} of {rows.length} videos completed{activeFilters ? " (filtered)" : ""}. Each block is one video, ordered by delivery date.</p>
+          <p className="hero-sub"><b>{counts.Completed} of {rows.length}</b> completed{activeFilters ? " (filtered)" : ""} · <b>{wentLiveThisMonth} of {liveThisMonth}</b> went live this month. Each block is one video, ordered by delivery date.</p>
         </div>
         <div>
           <div className="strip">

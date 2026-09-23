@@ -25,7 +25,7 @@ export function useTracker() {
     ]);
     if (!mounted.current) return;
     if (v.error) setError(/does not exist|schema cache|relation/i.test(v.error.message)
-      ? "The database is connected but its tables aren't set up yet. Redeploy the project in Vercel (setup runs automatically), or run supabase/schema.sql and seed.sql in Supabase → SQL Editor."
+      ? "The database is connected but its tables aren't set up yet. Redeploy the project in Vercel (setup runs automatically), or run schema.sql and seed.sql in Supabase → SQL Editor."
       : "Couldn't load videos: " + v.error.message);
     else { setVideos(v.data || []); setError(null); }
     if (!s.error && s.data && s.data.length) setStatuses(s.data);

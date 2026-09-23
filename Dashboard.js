@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { STAGES, LIST_FIELDS, STALE_DAYS } from "@/lib/config";
-import { monthLabel, fmtDate, fmtWhen, fmtCost, durText, pctText, wText, todayISO, thisMonth } from "@/lib/logic";
+import { STAGES, LIST_FIELDS, STALE_DAYS } from "./config";
+import { monthLabel, fmtDate, fmtWhen, fmtCost, durText, pctText, wText, todayISO, thisMonth } from "./logic";
 import { Badge, PBar, Modal, stageClass } from "./ui";
 
 const EMPTY_FILTERS = { month: "", product: "", maker: "", agency: "", digital_fpr: "", brand_checker: "", status: "", liveFrom: "", liveTo: "" };

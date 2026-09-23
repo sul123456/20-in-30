@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { pctText } from "@/lib/logic";
+import { pctText } from "./logic";
 
 const cls = (s) => String(s).replace(/\s+/g, "");
 

@@ -1,6 +1,6 @@
 // Runs automatically before every Vercel build.
 // Creates / updates the database tables and, if the videos table is empty,
-// loads the films from supabase/seed.sql. Safe to run any number of times:
+// loads the films from seed.sql. Safe to run any number of times:
 // it never deletes or overwrites the team's data.
 import fs from "node:fs";
 import path from "node:path";
@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import pg from "pg";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const read = (f) => fs.readFileSync(path.join(here, "..", "supabase", f), "utf8");
+const read = (f) => fs.readFileSync(path.join(here, f), "utf8");
 
 const candidates = [
   process.env.POSTGRES_URL_NON_POOLING,
@@ -55,5 +55,5 @@ try {
 } catch (e) {
   // Don't block the deployment; the app shows a clear message instead.
   console.warn("[setup-db] Automatic database setup did not complete:", e.message);
-  console.warn("[setup-db] Fallback: run supabase/schema.sql then supabase/seed.sql in Supabase → SQL Editor.");
+  console.warn("[setup-db] Fallback: run schema.sql then seed.sql in Supabase → SQL Editor.");
 }

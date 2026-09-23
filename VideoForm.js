@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { STAGES, DURATIONS, LIST_FIELDS } from "@/lib/config";
-import { monthLabel, thisMonth, pctText, fmtWhen } from "@/lib/logic";
+import { STAGES, DURATIONS, LIST_FIELDS } from "./config";
+import { monthLabel, thisMonth, pctText, fmtWhen } from "./logic";
 import { Badge } from "./ui";
 
 const NAME_KEY = "tracker_your_name"; // convenience only: pre-fills "Your name"

@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/setup-db.mjs && next build",
+    "build": "node setup-db.mjs && next build",
     "start": "next start",
-    "setup-db": "node scripts/setup-db.mjs"
+    "setup-db": "node setup-db.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.10",

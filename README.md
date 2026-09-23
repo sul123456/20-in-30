@@ -27,7 +27,7 @@ The database tables and your 31 films are set up **automatically** during deploy
 
 Later deploys re-check the tables but never delete or overwrite the team's data.
 
-**If step 4's log says "Automatic database setup did not complete":** open Supabase (Vercel → Storage → Open in Supabase) → **SQL Editor** → paste and run `supabase/schema.sql`, then `supabase/seed.sql`. Refresh the tracker.
+**If step 4's log says "Automatic database setup did not complete":** open Supabase (Vercel → Storage → Open in Supabase) → **SQL Editor** → paste and run `schema.sql`, then `seed.sql`. Refresh the tracker.
 
 ---
 
@@ -43,37 +43,30 @@ Later deploys re-check the tables but never delete or overwrite the team's data.
 **Calculated automatically — never typed in:**
 - **Overall status:** *Completed* if Final cut or Go Live is Done → otherwise *Overdue* if the go-live date has passed → otherwise *Not started* if every step is Pending → otherwise *In progress*.
 - **Completion %:** Script closure (the 3 script approvals) = 20% in total (6.7% each); each of the other 8 steps = 10%. A step earns its weight when marked Done.
-- **Needs attention:** unfinished videos whose go-live or delivery date has passed, or that haven't been updated for 5+ days (change `STALE_DAYS` in `lib/config.js`).
+- **Needs attention:** unfinished videos whose go-live or delivery date has passed, or that haven't been updated for 5+ days (change `STALE_DAYS` in `config.js`).
 
 ---
 
-## Folder structure
+## Files
+
+All files sit at the top level of the repository, except two that must be inside a folder named `app`:
 
 ```
-tracker/
-├── app/
-│   ├── layout.js          page shell, font, viewport
-│   ├── page.js            tabs, live indicator, deep links
-│   └── globals.css        all styles (mobile first)
-├── components/
-│   ├── Dashboard.js       leader dashboard, attention list, video list, detail + history
-│   ├── VideoForm.js       add / update form
-│   └── ui.js              badge, progress bar, modal
-├── lib/
-│   ├── config.js          steps, weights, durations, dropdown fields  ← edit structure here
-│   ├── logic.js           overall status, completion %, formatting
-│   ├── supabase.js        browser client (anon key only)
-│   └── useTracker.js      load + realtime sync + save
-├── supabase/
-│   ├── schema.sql         tables, save function, security rules, realtime
-│   ├── seed.sql           your 31 films from the Excel
-│   └── videos_import_template.csv   CSV layout for future imports
-├── scripts/
-│   └── setup-db.mjs       creates tables + loads films during the Vercel build
-├── .env.example
-├── jsconfig.json
-├── next.config.mjs
-└── package.json
+app/layout.js      page shell        ← must be in app/
+app/page.js        tabs + main page  ← must be in app/
+Dashboard.js       leader dashboard, attention list, video list, details + history
+VideoForm.js       add / update form
+ui.js              badge, progress bar, pop-up
+config.js          steps, weights, durations, dropdown fields  (edit structure here)
+logic.js           overall status, completion %, formatting
+supabase.js        database connection (public key only)
+useTracker.js      loading, live updates, saving
+globals.css        all styles
+setup-db.mjs       creates tables + loads films during each Vercel build
+schema.sql         tables, save function, security rules, realtime
+seed.sql           your 31 films from the Excel
+videos_import_template.csv   layout for future CSV imports
+package.json, next.config.mjs, jsconfig.json
 ```
 
 ## Settings (added automatically in step 3)
@@ -95,7 +88,7 @@ The secret / service-role key is never used by this app.
 **Already done for the current sheet:** loaded automatically on first deploy. `seed.sql` contains all 31 films (S.NO 1–31). Conversions: "Yes"/"Done" → Done, blank → Pending, "Expected today" kept as its own status, "Sep" → `2026-09`, "22-Sep" → `2026-09-22`, cost "TBC" → `cost_note = TBC`, the 15/20/30/40 Duration ticks → `durations`. S.NO continues from 32 for new videos.
 
 **Adding more rows from Excel later (CSV):**
-1. Open `supabase/videos_import_template.csv` in Excel. Keep the header row exactly as is; paste your rows underneath. Formats:
+1. Open `videos_import_template.csv` in Excel. Keep the header row exactly as is; paste your rows underneath. Formats:
    - `month`: `2026-10`  ·  dates: `2026-10-15`  ·  `durations`: `{20,30}` (or `{}`)
    - `cost`: a number without commas, or leave blank and put `TBC` in `cost_note`
    - every `stage_…` column: exactly one of the names in `stage_statuses` (e.g. `Pending`, `Done`)
@@ -113,7 +106,7 @@ Status options live in the **`stage_statuses`** table, so no code change or rede
 - **Remove:** only possible once no video uses that status.
 - `category` decides the maths: `pending` = not started, `progress` = in progress, `done` = complete (earns the step's weight).
 
-Changing the **steps or weights** themselves is a code change in `lib/config.js` (plus a matching column in the `videos` table and the `stage_cols` list in `save_video`).
+Changing the **steps or weights** themselves is a code change in `config.js` (plus a matching column in the `videos` table and the `stage_cols` list in `save_video`).
 
 ## Sharing the tracker with the team
 
@@ -141,4 +134,4 @@ Anyone with the link can view and update (version 1, as requested). Deleting a v
 
 ## Adding login later
 
-The app is structured for it: all writes go through one function (`save_video`) and one client (`lib/supabase.js`). To require sign-in: enable an auth provider in Supabase (e.g. email magic link or Google Workspace), add a sign-in screen, change the RLS policies from `to anon, authenticated` to `to authenticated`, revoke `execute` on `save_video` from `anon`, and use `auth.jwt()->>'email'` inside `save_video` instead of the typed name.
+The app is structured for it: all writes go through one function (`save_video`) and one client (`supabase.js`). To require sign-in: enable an auth provider in Supabase (e.g. email magic link or Google Workspace), add a sign-in screen, change the RLS policies from `to anon, authenticated` to `to authenticated`, revoke `execute` on `save_video` from `anon`, and use `auth.jwt()->>'email'` inside `save_video` instead of the typed name.

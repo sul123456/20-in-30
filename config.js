@@ -9,8 +9,7 @@ export const APP_TITLE = "20 in 30 Project Tracker";
 // Workflow steps, in the same order as the Excel "Detailed status of films" columns.
 // `col` must match the column name in public.videos.
 // weight = % of completion earned when the step is Done (must total 100).
-// Script closure (Brand + Product + BCO script approval) = 20% together;
-// the other 8 steps share the remaining 80% equally (10% each).
+// Revised allocation approved for the tracker: 5 + 5 + 5 + 20 + 5 + 5 + 10 + 5 + 15 + 5 + 15 + 5 = 100%.
 export const STAGES = [
   { col: "stage_agreement",      label: "Agency agreement status",   short: "Agency agreement",      group: "Agency setup",   weight: 5 },
   { col: "stage_ai_addendum",    label: "Agency AI Addendum status", short: "AI Addendum",           group: "Agency setup",   weight: 5 },

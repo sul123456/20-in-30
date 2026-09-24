@@ -225,7 +225,23 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
                   <div className="lbl"><i className="num">{i + 1}</i>{s.label}</div>
                   <div className="chips">
                     {opts.map((o) => (
-                      <button type="button" key={o} className={"chip c-" + L.catOf(o)} aria-pressed={o === cur} onClick={() => set(s.col, o)}>{o}</button>
+                      <button
+                        type="button"
+                        key={o}
+                        className={"chip c-" + L.catOf(o)}
+                        aria-pressed={o === cur}
+                        onClick={() => {
+                          if (s.col === "stage_all_edits" && o === "Done") {
+                            const incomplete = STAGES.find((stage) => stage.col !== "stage_all_edits" && !L.isDone(form[stage.col]));
+                            if (incomplete) {
+                              setErr(`Stage ${incomplete.label} not completed.`);
+                              return;
+                            }
+                          }
+                          setErr("");
+                          set(s.col, o);
+                        }}
+                      >{o}</button>
                     ))}
                   </div>
                 </div>

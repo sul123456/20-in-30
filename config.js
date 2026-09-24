@@ -12,17 +12,18 @@ export const APP_TITLE = "20 in 30 Project Tracker";
 // Script closure (Brand + Product + BCO script approval) = 20% together;
 // the other 8 steps share the remaining 80% equally (10% each).
 export const STAGES = [
-  { col: "stage_agreement",      label: "Agency agreement status",   short: "Agency agreement",  group: "Agency setup",   weight: 10 },
-  { col: "stage_ai_addendum",    label: "Agency AI Addendum status", short: "AI Addendum",       group: "Agency setup",   weight: 10 },
-  { col: "stage_onboarding",     label: "Agency Onboarding status",  short: "Agency onboarding", group: "Agency setup",   weight: 10 },
-  { col: "stage_brand_script",   label: "Brand Script approval",     short: "Brand script",      group: "Script closure", weight: 20 / 3 },
-  { col: "stage_product_script", label: "Product Script Approval",   short: "Product script",    group: "Script closure", weight: 20 / 3 },
-  { col: "stage_bco_script",     label: "BCO Script approval",       short: "BCO script",        group: "Script closure", weight: 20 / 3 },
-  { col: "stage_storyboarding",  label: "Storyboarding",             short: "Storyboarding",     group: "Production",     weight: 10 },
-  { col: "stage_legal",          label: "Self Legal Approval",       short: "Self legal",        group: "Production",     weight: 10 },
-  { col: "stage_first_cut",      label: "1st cut",                   short: "1st cut",           group: "Production",     weight: 10 },
-  { col: "stage_final_cut",      label: "Final cut",                 short: "Final cut",         group: "Production",     weight: 10 },
-  { col: "stage_go_live",        label: "Go Live",                   short: "Go Live",           group: "Production",     weight: 10 },
+  { col: "stage_agreement",      label: "Agency agreement status",   short: "Agency agreement",      group: "Agency setup",   weight: 5 },
+  { col: "stage_ai_addendum",    label: "Agency AI Addendum status", short: "AI Addendum",           group: "Agency setup",   weight: 5 },
+  { col: "stage_onboarding",     label: "Agency Onboarding status",  short: "Agency onboarding",     group: "Agency setup",   weight: 5 },
+  { col: "stage_brand_script",   label: "Brand Script approval",     short: "Brand script",          group: "Script closure", weight: 20 },
+  { col: "stage_product_script", label: "Product Script Approval",   short: "Product script",        group: "Script closure", weight: 5 },
+  { col: "stage_bco_script",     label: "BCO Script approval",       short: "Product BCO script",    group: "Script closure", weight: 5 },
+  { col: "stage_storyboarding",  label: "Storyboarding",             short: "Storyboarding",          group: "Production",     weight: 10 },
+  { col: "stage_legal",          label: "Self Legal Approval",       short: "Self legal",            group: "Production",     weight: 5 },
+  { col: "stage_first_cut",      label: "1st cut",                   short: "1st cut",               group: "Production",     weight: 15 },
+  { col: "stage_brand_approval", label: "Brand approval on film",    short: "Brand approval on film",group: "Production",     weight: 5 },
+  { col: "stage_all_edits",      label: "All edits delivered",       short: "All edits delivered",   group: "Production",     weight: 15 },
+  { col: "stage_go_live",        label: "Go Live",                   short: "Go Live",               group: "Production",     weight: 5 },
 ];
 
 // Duration options in seconds (the Excel "Duration" 15 / 20 / 30 / 40 columns).

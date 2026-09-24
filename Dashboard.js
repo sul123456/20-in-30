@@ -391,3 +391,76 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
       </section>
 
 
+
+      {openId && (
+        <Detail v={videos.find((x) => x.id === openId)} L={L} loadHistory={loadHistory}
+          onClose={() => setOpenId(null)} onEdit={() => { const id = openId; setOpenId(null); onEdit(id); }} />
+      )}
+    </div>
+  );
+}
+
+function GroupPanel({ title, col, rows, L }) {
+  const groups = {};
+  rows.forEach((v) => { const k = v[col] || "Not set"; (groups[k] = groups[k] || []).push(v); });
+  const list = Object.entries(groups).map(([k, vs]) => ({
+    k, n: vs.length, done: vs.filter((v) => L.overall(v) === "Completed").length,
+    avg: vs.reduce((t, v) => t + L.completion(v), 0) / vs.length,
+  })).sort((a, b) => b.avg - a.avg || a.k.localeCompare(b.k));
+  return (
+    <section className="panel">
+      <div className="panel-head"><h3>{title}</h3></div>
+      {list.length ? (
+        <table className="grp-tbl">
+          <thead><tr><th>{title.replace("-wise completion", "")}</th><th className="n">Videos</th><th className="n">Done</th><th>Avg. completion</th></tr></thead>
+          <tbody>{list.map((r) => (
+            <tr key={r.k}><td><b className={r.k === "Not set" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>
+          ))}</tbody>
+        </table>
+      ) : <div className="empty-state">No videos to show.</div>}
+    </section>
+  );
+}
+
+function Detail({ v, L, onClose, onEdit, loadHistory }) {
+  const [history, setHistory] = useState(null);
+  const [histErr, setHistErr] = useState("");
+  useEffect(() => {
+    if (!v) return;
+    loadHistory(v.id).then(setHistory).catch((e) => setHistErr(e.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [v?.id, v?.updated_at]);
+  if (!v) return null;
+  const st = L.overall(v);
+  const label = Object.fromEntries(STAGES.map((s) => [s.col, s.short]));
+  const Row = ({ k, children, wide }) => <div className={wide ? "wide" : ""}><dt>{k}</dt><dd>{children || "—"}</dd></div>;
+  return (
+    <Modal title={`#${v.sno} ${v.feature}`} onClose={onClose}>
+      <div className="detail-top"><Badge status={st} /><span className="muted">Current step: <b className="ink">{L.currentStage(v)}</b></span><span className="grow" /><PBar value={L.completion(v)} /></div>
+      <button className="btn btn-primary wide-btn" onClick={onEdit}>Update this video</button>
+      <div className="card"><h2>Workflow</h2>
+        <div className="track">{STAGES.map((s) => (
+          <div key={s.col} className={"tstep t-" + stageClass(L.catOf, v[s.col])}><span>{s.short} <small>{wText(s.weight)}</small></span><small>{v[s.col]}</small></div>
+        ))}</div>
+      </div>
+      <div className="card"><dl className="dl">
+        <Row k="S.NO">{v.sno}</Row><Row k="Month">{monthLabel(v.month)}</Row>
+        <Row k="Product">{v.product}</Row><Row k="Usage">{v.usage}</Row>
+        <Row k="Feature" wide>{v.feature}</Row>
+        <Row k="Duration">{durText(v)}</Row><Row k="Cost">{fmtCost(v)}</Row>
+        <Row k="Maker">{v.maker}</Row><Row k="Agency">{v.agency}</Row>
+        <Row k="Digital FPR">{v.digital_fpr}</Row><Row k="Brand Checker">{v.brand_checker}</Row>
+        <Row k="Delivery date">{fmtDate(v.delivery_date)}</Row><Row k="Go live date">{fmtDate(v.go_live_date)}</Row>
+        <Row k="Remarks" wide>{v.remarks}</Row>
+      </dl><div className="meta">Last updated {fmtWhen(v.updated_at)}{v.updated_by ? ` by ${v.updated_by}` : ""}</div></div>
+      <div className="card"><h2>Status history</h2>
+        {histErr ? <p className="muted">{histErr}</p> : history === null ? <p className="muted">Loading…</p> : history.length === 0 ? <p className="muted">No status changes recorded yet.</p> : (
+          <ul className="hist">{history.map((h) => (
+            <li key={h.id}><b>{label[h.stage] || h.stage}</b>: {h.previous_status || "new"} → <b>{h.new_status}</b>
+              <small>{h.changed_by}, {fmtWhen(h.changed_at)}{h.comments ? ` · “${h.comments}”` : ""}</small></li>
+          ))}</ul>
+        )}
+      </div>
+    </Modal>
+  );
+}

@@ -134,34 +134,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
         <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
       </div>
 
-      {/* ---------- all videos ---------- */}      {/* ---------- stage breakdown ---------- */}
-      <section className="panel">
-        <div className="panel-head"><h3>Where every video is, step by step</h3></div>
-        <div className="scroll-x">
-          <table className="stage-tbl">
-            <thead><tr><th>Step</th>{statusNames.map((s) => <th key={s} className="n">{s}</th>)}<th className="n">Total</th><th>Pipeline</th></tr></thead>
-            <tbody>
-              {STAGES.map((s) => {
-                const c = {};
-                statusNames.forEach((x) => (c[x] = 0));
-                rows.forEach((v) => { const val = v[s.col] || "Pending"; c[val] = (c[val] || 0) + 1; });
-                return (
-                  <tr key={s.col}>
-                    <td><b>{s.short}</b></td>
-                    {statusNames.map((x) => <td key={x} className={"n num" + (c[x] ? "" : " zero")}>{c[x] || 0}</td>)}
-                    <td className="n num"><b>{rows.length}</b></td>
-                    <td className="barcell">
-                      <div className="sbar">{rows.length > 0 && statusNames.map((x) => c[x] ? <div key={x} title={`${x}: ${c[x]}`} style={{ width: `${(c[x] / rows.length) * 100}%`, background: colorOf(x) }} /> : null)}</div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* ---------- needs attention ---------- */}
+      {/* ---------- all videos ---------- */}      {/* ---------- needs attention ---------- */}
       <section className="panel">
         <div className="panel-head"><h3>Videos needing attention <span className="muted num">({attention.length})</span></h3></div>
         {attention.length ? (

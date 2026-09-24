@@ -104,7 +104,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
         <div className="kpi k-prog"><div className="v num">{counts["In Progress"]}</div><div className="l">In progress</div></div>
         <div className="kpi k-pend"><div className="v num">{counts.Pending}</div><div className="l">Not started</div></div>
         <div className="kpi k-over"><div className="v num">{counts.Overdue}</div><div className="l">Overdue</div></div>
-        <div className="kpi k-live"><div className="v num">{liveThisMonth}</div><div className="l">Go live this month</div></div>
+        <div className="kpi k-live"><div className="v num">{wentLive}</div><div className="l">Went live</div></div>
         <div className="kpi k-pct"><div className="v num">{pctText(avg)}</div><div className="l">Completion</div></div>
       </section>
 

@@ -43,7 +43,7 @@ export function makeLogic(statuses) {
 
   // Overall status is always calculated, never typed in.
   function overall(v) {
-    if (isDone(v.stage_final_cut) || isDone(v.stage_go_live)) return "Completed";
+    if (isDone(v.stage_all_edits)) return "Completed";
     if (v.go_live_date && v.go_live_date < todayISO()) return "Overdue";
     if (STAGES.every((s) => isPending(v[s.col]))) return "Pending";
     return "In Progress";

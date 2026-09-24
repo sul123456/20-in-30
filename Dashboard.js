@@ -134,30 +134,6 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
         <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
       </div>
 
-      {/* ---------- all videos ---------- */}      {/* ---------- needs attention ---------- */}
-      <section className="panel">
-        <div className="panel-head"><h3>Videos needing attention <span className="muted num">({attention.length})</span></h3></div>
-        {attention.length ? (
-          <ul className="att">
-            {attention.map(({ v, why }) => (
-              <li key={v.id}>
-                <button onClick={() => setOpenId(v.id)}>
-                  <span className="att-main"><b><span className="num muted">#{v.sno}</span> {v.feature}</b>
-                    <small>{[v.maker, L.currentStage(v), `updated ${fmtWhen(v.updated_at)}`].filter(Boolean).join(" · ")}</small>
-                    {v.remarks && <small className="att-rem">{v.remarks}</small>}
-                  </span>
-                  <span className="att-why">{why.map((w) => <span key={w} className="flag">{w}</span>)}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : <div className="empty-state">Nothing needs attention right now.</div>}
-      </section>
-<div className="grid-2">
-        <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} />
-        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
-      </div>
-
       {/* ---------- all videos ---------- */}
       <section className="panel">
         <div className="panel-head">
@@ -239,73 +215,6 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
           </ul>
         ) : <div className="empty-state">Nothing needs attention right now.</div>}
       </section>
-<div className="grid-2">
-        <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} />
-        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
-      </div>
-
-      {/* ---------- all videos ---------- */}
-      <section className="panel">
-        <div className="panel-head">
-          <h3>All videos <span className="muted num">({list.length})</span></h3>
-          <input className="input search" type="search" placeholder="Search feature, product or maker" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <select className="input sort-mobile" aria-label="Sort by" value={`${sort.field}:${sort.dir}`} onChange={(e) => { const [field, dir] = e.target.value.split(":"); setSort({ field, dir }); }}>
-            <option value="completion:desc">Sort: completion</option>
-            <option value="status:asc">Sort: status</option>
-            <option value="sno:asc">Sort: S.NO</option>
-            <option value="delivery_date:asc">Sort: delivery date</option>
-            <option value="go_live_date:asc">Sort: go-live date</option>
-            <option value="updated_at:desc">Sort: last updated</option>
-          </select>
-        </div>
-        {list.length === 0 ? <div className="empty-state"><b>No videos match</b>Clear a filter or change the search.</div> : (
-          <>
-            <div className="scroll-x desktop-only">
-              <table className="proj-tbl">
-                <thead><tr>
-                  <Th field="sno">S.NO</Th><th>Video</th><th>Maker</th><th>Brand Checker</th><th>Current step</th>
-                  <Th field="completion">Completion</Th><Th field="delivery_date">Delivery</Th><Th field="go_live_date">Go live</Th>
-                  <Th field="status">Status</Th><Th field="updated_at">Last updated</Th><th>Remarks</th>
-                </tr></thead>
-                <tbody>
-                  {list.map((v) => {
-                    const st = L.overall(v);
-                    return (
-                      <tr key={v.id} className={st === "Overdue" ? "is-overdue" : ""} tabIndex={0} onClick={() => setOpenId(v.id)} onKeyDown={(e) => e.key === "Enter" && setOpenId(v.id)}>
-                        <td className="num">{v.sno}</td>
-                        <td className="feat"><b>{v.feature}</b><small>{[v.product, v.usage, durText(v)].filter(Boolean).join(" · ")}</small></td>
-                        <td>{v.maker || "—"}</td><td>{v.brand_checker || "—"}</td><td>{L.currentStage(v)}</td>
-                        <td><PBar value={L.completion(v)} /></td>
-                        <td className={"num" + (v.delivery_date && v.delivery_date < today && st !== "Completed" ? " late" : "")}>{fmtDate(v.delivery_date)}</td>
-                        <td className={"num" + (st === "Overdue" ? " late" : "")}>{fmtDate(v.go_live_date)}</td>
-                        <td><Badge status={st} /></td>
-                        <td className="num muted">{fmtWhen(v.updated_at)}</td>
-                        <td className="rem">{v.remarks || ""}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            <ul className="cards mobile-only">
-              {list.map((v) => {
-                const st = L.overall(v);
-                return (
-                  <li key={v.id} className={st === "Overdue" ? "is-overdue" : ""}>
-                    <button onClick={() => setOpenId(v.id)}>
-                      <div className="c-top"><b><span className="num muted">#{v.sno}</span> {v.feature}</b><Badge status={st} /></div>
-                      <div className="c-meta">{[v.maker, v.product, L.currentStage(v)].filter(Boolean).join(" · ")}</div>
-                      <div className="c-bot"><PBar value={L.completion(v)} /><span className={"num" + (v.delivery_date && v.delivery_date < today && st !== "Completed" ? " late" : " muted")}>Delivery {fmtDate(v.delivery_date)}</span></div>
-                      {v.remarks && <div className="c-rem">{v.remarks}</div>}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </>
-        )}
-      </section>
-
 
 
       {openId && (

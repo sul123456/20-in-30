@@ -195,8 +195,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
           </>
         )}
       </section>
-      {/* ---------- all videos ---------- */}
-{/* ---------- needs attention ---------- */}
+      {/* ---------- needs attention ---------- */}
       <section className="panel">
         <div className="panel-head"><h3>Videos needing attention <span className="muted num">({attention.length})</span></h3></div>
         {attention.length ? (

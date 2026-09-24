@@ -230,7 +230,7 @@ function GroupPanel({ title, col, rows, L }) {
   const list = Object.entries(groups).map(([k, vs]) => ({
     k, n: vs.length, done: vs.filter((v) => L.overall(v) === "Completed").length,
     avg: vs.reduce((t, v) => t + L.completion(v), 0) / vs.length,
-  })).sort((a, b) => b.avg - a.avg || a.k.localeCompare(b.k));
+  })).sort((a, b) => b.n - a.n || a.k.localeCompare(b.k));
   return (
     <section className="panel">
       <div className="panel-head"><h3>{title}</h3></div>

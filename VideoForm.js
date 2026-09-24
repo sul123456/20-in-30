@@ -151,7 +151,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
     const q = query.trim().toLowerCase();
     const list = videos
       .filter((v) => !q || [v.feature, v.product, v.maker, v.agency, String(v.sno)].some((x) => String(x || "").toLowerCase().includes(q)))
-      .sort((a, b) => a.sno - b.sno);
+      .sort((a, b) => L.completion(b) - L.completion(a) || a.sno - b.sno);
     return (
       <div className="form-wrap">
         {modeSwitch}

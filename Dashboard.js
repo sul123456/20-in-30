@@ -11,7 +11,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState({ field: "sno", dir: "asc" });
+  const [sort, setSort] = useState({ field: "completion", dir: "desc" });
   const [openId, setOpenId] = useState(null);
 
   const rows = useMemo(() => videos.filter((v) => {
@@ -27,8 +27,8 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
   // ---------- numbers (all calculated from the live Supabase rows) ----------
   const counts = { Completed: 0, "In Progress": 0, Pending: 0, Overdue: 0 };
   rows.forEach((v) => counts[L.overall(v)]++);
-  const liveThisMonth = rows.filter((v) => v.go_live_date && v.go_live_date.slice(0, 7) === thisMonth()).length;
-  const wentLiveThisMonth = rows.filter((v) => v.go_live_date && v.go_live_date.slice(0, 7) === thisMonth() && v.stage_go_live === "Done").length;
+  const completedVideos = rows.filter((v) => L.overall(v) === "Completed");
+  const wentLive = completedVideos.filter((v) => L.isDone(v.stage_go_live)).length;
   const avg = rows.length ? rows.reduce((t, v) => t + L.completion(v), 0) / rows.length : 0;
   const activeFilters = Object.values(filters).filter(Boolean).length;
   const statusNames = statuses.map((s) => s.name);
@@ -77,14 +77,17 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
       <section className="hero">
         <div>
           <p className="hero-head num">{pctText(avg)} <span>complete</span></p>
-          <p className="hero-sub"><b>{counts.Completed} of {rows.length}</b> completed{activeFilters ? " (filtered)" : ""} · <b>{wentLiveThisMonth} of {liveThisMonth}</b> went live this month. Each block is one video, ordered by delivery date.</p>
+          <p className="hero-sub"><b>{counts.Completed} of {rows.length}</b> completed{activeFilters ? " (filtered)" : ""} · <b>{wentLive} of {completedVideos.length}</b> went live.</p>
         </div>
         <div>
           <div className="strip">
-            {rows.slice().sort((a, b) => (a.delivery_date || "9").localeCompare(b.delivery_date || "9") || a.sno - b.sno).map((v) => {
-              const st = L.overall(v);
-              return <button key={v.id} className={"cell " + st.replace(/\s/g, "")} title={`#${v.sno} ${v.feature}: ${st}`} aria-label={`#${v.sno} ${v.feature}, ${st}`} onClick={() => setOpenId(v.id)} />;
-            })}
+            {["Completed", "In Progress", "Pending", "Overdue"].flatMap((status) =>
+              rows.filter((v) => L.overall(v) === status).sort((a, b) => L.completion(b) - L.completion(a) || a.sno - b.sno)
+                .map((v) => {
+                  const st = L.overall(v);
+                  return <button key={v.id} className={"cell " + st.replace(/\s/g, "")} title={`#${v.sno} ${v.feature}: ${st}`} aria-label={`#${v.sno} ${v.feature}, ${st}`} onClick={() => setOpenId(v.id)} />;
+                })
+            )}
           </div>
           <div className="legend">
             <span><i style={{ background: "var(--done)" }} />Completed</span>
@@ -185,9 +188,9 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
           <h3>All videos <span className="muted num">({list.length})</span></h3>
           <input className="input search" type="search" placeholder="Search feature, product or maker" value={search} onChange={(e) => setSearch(e.target.value)} />
           <select className="input sort-mobile" aria-label="Sort by" value={`${sort.field}:${sort.dir}`} onChange={(e) => { const [field, dir] = e.target.value.split(":"); setSort({ field, dir }); }}>
-            <option value="sno:asc">Sort: S.NO</option>
+            <option value="completion:desc">Sort: completion</option>
             <option value="status:asc">Sort: status</option>
-            <option value="completion:desc">Sort: most complete</option>
+            <option value="sno:asc">Sort: S.NO</option>
             <option value="delivery_date:asc">Sort: delivery date</option>
             <option value="go_live_date:asc">Sort: go-live date</option>
             <option value="updated_at:desc">Sort: last updated</option>

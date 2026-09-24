@@ -50,7 +50,8 @@ create table if not exists public.videos (
   stage_storyboarding  text not null default 'Pending' references public.stage_statuses(name) on update cascade,
   stage_legal          text not null default 'Pending' references public.stage_statuses(name) on update cascade,
   stage_first_cut      text not null default 'Pending' references public.stage_statuses(name) on update cascade,
-  stage_final_cut      text not null default 'Pending' references public.stage_statuses(name) on update cascade,
+  stage_brand_approval text not null default 'Pending' references public.stage_statuses(name) on update cascade,
+  stage_all_edits      text not null default 'Pending' references public.stage_statuses(name) on update cascade,
   stage_go_live        text not null default 'Pending' references public.stage_statuses(name) on update cascade,
   updated_by           text,
   created_at           timestamptz not null default now(),
@@ -95,7 +96,7 @@ declare
   k       text;
   stage_cols text[] := array['stage_agreement','stage_ai_addendum','stage_onboarding',
     'stage_brand_script','stage_product_script','stage_bco_script','stage_storyboarding',
-    'stage_legal','stage_first_cut','stage_final_cut','stage_go_live'];
+    'stage_legal','stage_first_cut','stage_brand_approval','stage_all_edits','stage_go_live'];
 begin
   if coalesce(btrim(p_changed_by), '') = '' then
     raise exception 'Please enter your name before saving.';
@@ -145,7 +146,8 @@ begin
     stage_storyboarding  = coalesce(p_patch->>'stage_storyboarding',  stage_storyboarding),
     stage_legal          = coalesce(p_patch->>'stage_legal',          stage_legal),
     stage_first_cut      = coalesce(p_patch->>'stage_first_cut',      stage_first_cut),
-    stage_final_cut      = coalesce(p_patch->>'stage_final_cut',      stage_final_cut),
+    stage_brand_approval = coalesce(p_patch->>'stage_brand_approval', stage_brand_approval),
+    stage_all_edits      = coalesce(p_patch->>'stage_all_edits',      stage_all_edits),
     stage_go_live        = coalesce(p_patch->>'stage_go_live',        stage_go_live),
     updated_by    = btrim(p_changed_by),
     updated_at    = now()

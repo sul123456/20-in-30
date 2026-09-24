@@ -70,8 +70,6 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
     <th><button className="sortbtn" data-active={sort.field === field} onClick={() => sortBy(field)}>{children} {sort.field === field ? (sort.dir === "asc" ? "↑" : "↓") : ""}</button></th>
   );
   const today = todayISO();
-  const scriptW = STAGES.filter((s) => s.group === "Script closure");
-  const otherW = STAGES.filter((s) => s.group !== "Script closure");
 
   return (
     <div className="dash">
@@ -173,7 +171,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
             </tbody>
           </table>
         </div>
-        <div className="weights">Completion counts steps marked Done. Script closure ({scriptW.map((s) => s.short).join(", ")}) is {wText(scriptW.reduce((t, s) => t + s.weight, 0))} together; each other step is {wText(otherW[0].weight)}.</div>
+        <div className="weights">Completion counts each step when it is marked Done, using the revised 100% workflow allocation.</div>
       </section>
 
       <div className="grid-2">

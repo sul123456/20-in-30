@@ -29,7 +29,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
   rows.forEach((v) => counts[L.overall(v)]++);
   const completedVideos = rows.filter((v) => L.overall(v) === "Completed");
   const wentLive = completedVideos.filter((v) => L.isDone(v.stage_go_live)).length;
-  const avg = rows.length ? rows.reduce((t, v) => t + L.completion(v), 0) / rows.length : 0;
+  const completedPct = rows.length ? (counts.Completed / rows.length) * 100 : 0;
   const activeFilters = Object.values(filters).filter(Boolean).length;
   const statusNames = statuses.map((s) => s.name);
   const colorOf = (name) => ({ pending: "var(--pending)", done: "var(--done)" }[L.catOf(name)] || (name === "In Progress" ? "var(--progress)" : "var(--other)"));
@@ -76,7 +76,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
       {/* ---------- headline ---------- */}
       <section className="hero">
         <div>
-          <p className="hero-head num">{pctText(avg)} <span>complete</span></p>
+          <p className="hero-head num">{pctText(completedPct)} <span>complete</span></p>
           <p className="hero-sub"><b>{counts.Completed} of {rows.length}</b> completed{activeFilters ? " (filtered)" : ""} · <b>{wentLive} of {completedVideos.length}</b> went live.</p>
         </div>
         <div>
@@ -105,7 +105,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
         <div className="kpi k-pend"><div className="v num">{counts.Pending}</div><div className="l">Not started</div></div>
         <div className="kpi k-over"><div className="v num">{counts.Overdue}</div><div className="l">Overdue</div></div>
         <div className="kpi k-live"><div className="v num">{wentLive}</div><div className="l">Went live</div></div>
-        <div className="kpi k-pct"><div className="v num">{pctText(avg)}</div><div className="l">Completion</div></div>
+        <div className="kpi k-pct"><div className="v num">{pctText(completedPct)}</div><div className="l">Completion</div></div>
       </section>
 
       {/* ---------- filters ---------- */}
@@ -126,6 +126,38 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
               <input className="input" type="date" aria-label="Go live to" value={filters.liveTo} onChange={(e) => setFilters({ ...filters, liveTo: e.target.value })} />
             </div>
           </div>
+        </div>
+      </section>
+
+      <div className="grid-2">
+        <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} />
+        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
+      </div>
+
+      {/* ---------- all videos ---------- */}      {/* ---------- stage breakdown ---------- */}
+      <section className="panel">
+        <div className="panel-head"><h3>Where every video is, step by step</h3></div>
+        <div className="scroll-x">
+          <table className="stage-tbl">
+            <thead><tr><th>Step</th>{statusNames.map((s) => <th key={s} className="n">{s}</th>)}<th className="n">Total</th><th>Pipeline</th></tr></thead>
+            <tbody>
+              {STAGES.map((s) => {
+                const c = {};
+                statusNames.forEach((x) => (c[x] = 0));
+                rows.forEach((v) => { const val = v[s.col] || "Pending"; c[val] = (c[val] || 0) + 1; });
+                return (
+                  <tr key={s.col}>
+                    <td><b>{s.short}</b></td>
+                    {statusNames.map((x) => <td key={x} className={"n num" + (c[x] ? "" : " zero")}>{c[x] || 0}</td>)}
+                    <td className="n num"><b>{rows.length}</b></td>
+                    <td className="barcell">
+                      <div className="sbar">{rows.length > 0 && statusNames.map((x) => c[x] ? <div key={x} title={`${x}: ${c[x]}`} style={{ width: `${(c[x] / rows.length) * 100}%`, background: colorOf(x) }} /> : null)}</div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </section>
 

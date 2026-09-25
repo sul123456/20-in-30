@@ -55,7 +55,7 @@ export const OCTOBER_STAGES = [
   { col: "stage_agreement", label: "Agency agreement status", short: "Agency agreement", group: "Brief & Agency setup", weight: 5 },
   { col: "stage_ai_addendum", label: "Agency AI Addendum status", short: "AI Addendum", group: "Brief & Agency setup", weight: 5 },
   { col: "stage_onboarding", label: "Agency Onboarding status", short: "Agency onboarding", group: "Brief & Agency setup", weight: 5 },
-  { col: "stage_brand_script", label: "Brand Script approval", short: "Brand script", group: "Script closure", weight: 20 },
+  { col: "stage_brand_script", label: "Brand Script approval", short: "Brand script", group: "Script closure", weight: 15 },
   { col: "stage_product_script", label: "Product Script Approval", short: "Product script", group: "Script closure", weight: 5 },
   { col: "stage_bco_script", label: "BCO Script approval", short: "Product BCO script", group: "Script closure", weight: 5 },
   { col: "stage_storyboarding", label: "Storyboarding", short: "Storyboarding", group: "Production", weight: 10 },

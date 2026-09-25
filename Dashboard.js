@@ -71,6 +71,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     <th><button className="sortbtn" data-active={sort.field === field} onClick={() => sortBy(field)}>{children} {sort.field === field ? (sort.dir === "asc" ? "↑" : "↓") : ""}</button></th>
   );
   const today = todayISO();
+  const isOctober = month === "2026-10";
 
   return (
     <div className="dash">
@@ -157,7 +158,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
               <table className="proj-tbl">
                 <thead><tr>
                   <Th field="sno">S.NO</Th><th>Video</th><th>Maker</th><th>Brand Checker</th><th>Current step</th>
-                  <Th field="completion">Completion</Th>{october && <Th field="planned_delivery_date">Planned delivery</Th>}{october && <th>Brand SR</th>}<Th field="delivery_date">Delivery</Th><Th field="go_live_date">Go live</Th>
+                  <Th field="completion">Completion</Th>{isOctober && <Th field="planned_delivery_date">Planned delivery</Th>}{isOctober && <th>Brand SR</th>}<Th field="delivery_date">Delivery</Th><Th field="go_live_date">Go live</Th>
                   <Th field="status">Status</Th><Th field="updated_at">Last updated</Th><th>Remarks</th>
                 </tr></thead>
                 <tbody>
@@ -169,7 +170,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
                         <td className="feat"><b>{v.feature}</b><small>{[v.product, v.usage, durText(v)].filter(Boolean).join(" · ")}</small></td>
                         <td>{v.maker || "—"}</td><td>{v.brand_checker || "—"}</td><td>{L.currentStage(v)}</td>
                         <td><PBar value={L.completion(v)} /></td>
-                        {october && <td className="num">{fmtDate(v.planned_delivery_date)}</td>}{october && <td>{v.brand_sr || "—"}</td>}
+                        {isOctober && <td className="num">{fmtDate(v.planned_delivery_date)}</td>}{isOctober && <td>{v.brand_sr || "—"}</td>}
                         <td className={"num" + (v.delivery_date && v.delivery_date < today && st !== "Completed" ? " late" : "")}>{fmtDate(v.delivery_date)}</td>
                         <td className={"num" + (st === "Overdue" ? " late" : "")}>{fmtDate(v.go_live_date)}</td>
                         <td><Badge status={st} /></td>

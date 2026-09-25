@@ -179,7 +179,29 @@ td.n, th.n { text-align: right; width: 1%; }
 .sbar div { height: 100%; }
 .weights { font-size: 13px; color: var(--muted); padding: 10px 16px; border-top: 1px solid var(--line); }
 .grp-tbl td { white-space: nowrap; }
-@media (max-width: 480px) { .grp-tbl .pbar { width: 60px; } .grp-tbl th, .grp-tbl td { padding: 10px 10px; } }
+@media (max-width: 480px) {
+  /* Keep the maker/product tables inside the phone viewport.
+     The percentage is kept visible by allowing the bar to shrink, not the text. */
+  .grp-tbl { table-layout: fixed; width: 100%; }
+  .grp-tbl th, .grp-tbl td { padding: 10px 8px; }
+  .grp-tbl th:first-child, .grp-tbl td:first-child { width: 40%; }
+  .grp-tbl th:nth-child(2), .grp-tbl td:nth-child(2),
+  .grp-tbl th:nth-child(3), .grp-tbl td:nth-child(3) { width: 14%; }
+  .grp-tbl th:last-child, .grp-tbl td:last-child { width: 32%; }
+  .grp-tbl th:last-child { white-space: normal; line-height: 1.2; }
+  .grp-tbl td:first-child b { display: block; overflow-wrap: anywhere; }
+  .grp-tbl .pwrap { display: flex; width: 100%; min-width: 0; gap: 5px; }
+  .grp-tbl .pbar { width: auto; flex: 1 1 auto; min-width: 20px; max-width: none; }
+  .grp-tbl .pct { flex: 0 0 32px; min-width: 32px; font-size: 12px; }
+}
+@media (max-width: 360px) {
+  .grp-tbl th, .grp-tbl td { padding: 9px 5px; }
+  .grp-tbl th:first-child, .grp-tbl td:first-child { width: 38%; }
+  .grp-tbl th:nth-child(2), .grp-tbl td:nth-child(2),
+  .grp-tbl th:nth-child(3), .grp-tbl td:nth-child(3) { width: 14%; }
+  .grp-tbl th:last-child, .grp-tbl td:last-child { width: 34%; }
+  .grp-tbl .pct { flex-basis: 30px; min-width: 30px; font-size: 11px; }
+}
 
 .att { list-style: none; margin: 0; padding: 0; }
 .att li + li { border-top: 1px solid var(--line); }

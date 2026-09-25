@@ -37,7 +37,7 @@ export default function Home() {
       <header className="topbar">
         <div className="topbar-in">
           <div className="brand">
-            <img className="brand-image" src="/300-in-30-header.jpg" alt="300 in 30 Project Tracker" />
+            <img className="brand-image" src="/300-in-30.jpg" alt="300 in 30 Project Tracker" />
             <h1>{APP_TITLE}</h1>
           </div>
           <span className={"live" + (live ? " on" : "")} title={live ? "Live: updates appear automatically" : "Connectingâ€¦"}>

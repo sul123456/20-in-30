@@ -34,23 +34,23 @@ export const pctText = (n) => Math.round(n) + "%";
 export const wText = (w) => String(Math.round(w * 10) / 10).replace(/\.0$/, "") + "%";
 
 // ---------- calculations (built from the stage_statuses table) ----------
-export function makeLogic(statuses) {
+export function makeLogic(statuses, stages = STAGES, options = {}) {
   const cat = {};
   statuses.forEach((s) => (cat[s.name] = s.category));
   const catOf = (val) => cat[val] || (val === "Done" ? "done" : val === "Pending" || !val ? "pending" : "progress");
-  const isDone = (val) => catOf(val) === "done";
+  const isDone = (val) => catOf(val) === "done" || (options.naCountsAsDone && catOf(val) === "na");
   const isPending = (val) => catOf(val) === "pending";
 
   // Overall status is always calculated, never typed in.
   function overall(v) {
     if (isDone(v.stage_all_edits)) return "Completed";
     if (v.go_live_date && v.go_live_date < todayISO()) return "Overdue";
-    if (STAGES.every((s) => isPending(v[s.col]))) return "Pending";
+    if (stages.every((s) => isPending(v[s.col]))) return "Pending";
     return "In Progress";
   }
-  const completion = (v) => STAGES.reduce((t, s) => t + (isDone(v[s.col]) ? s.weight : 0), 0);
+  const completion = (v) => stages.reduce((t, s) => t + (isDone(v[s.col]) ? s.weight : 0), 0);
   function currentStage(v) {
-    const s = STAGES.find((s) => !isDone(v[s.col]));
+    const s = stages.find((s) => !isDone(v[s.col]));
     return s ? s.short : "All done";
   }
   function attentionReasons(v) {

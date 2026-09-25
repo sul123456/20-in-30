@@ -295,10 +295,46 @@ function Detail({ v, L, stages = STAGES, onClose, onEdit, loadHistory }) {
 }
 
 
+const OCTOBER_APPROVERS = {
+  "BAU (Activation vouchers Rs.2700 Ixigo & RD) Guy at aiport with headphones - AI": "Manan",
+  "BAU (BMS) - AI": "Manan",
+  "Card Control - AI": "Manan",
+  "BAU (Activation + BMS) - Creator": "Varun",
+  "Alumni (BMS) - AI": "Manan",
+  "Top Alumni (Activation vouchers Rs.1200 Ixigo) - AI": "Manan",
+  "Top Corp (Activation vouchers Rs.1200 Ixigo) - AI": "Manan",
+  "Rupay Convenience (Simpler Bank Statement) - AI": "Manan",
+  "Rupay Convenience (Simpler Bank Statement) - Creator": "Varun",
+  "Rupay Convenience - Creator Repurposed": "Varun",
+  "SmartLock on iMobile - AI": "Varun",
+  "Retirement solution, Invest in NPS on iMobile - AI": "Varun",
+  "SmartLock on iMobile, End slate super: No minimum balance - AI": "Varun",
+  "Retirement solution, Invest in NPS on iMobile, End slate super: No minimum balance - AI": "Varun",
+  "AL - Loan up to 100% of on-road price PL - Loan up to Rs. 50 L - AI": "Sulbha",
+  "AL - Apply online and get quick disbursal, 3,500+ dealers PL - Apply online and get quick disbursement - AI": "Sulbha",
+  "Loan up to Rs. 50 L, Tenure up to 74 months, Home Renovation - AI": "Sulbha",
+  "Loan up to Rs. 50 L, Tenure up to 74 months, Dream Vacation": "Sulbha",
+  "Loan up to Rs. 50 L, Tenure up to 74 months, Big-ticket Gadgets": "Sulbha",
+  "HL NCA - Online sanction, minimal documentation, Festive Led - AI": "Sulbha",
+  "HL NCA - Attractive interest rate, minimal documentation, Festive Led - AI": "Sulbha",
+  "PAHL - Online sanction, No documentation - AI": "Sulbha",
+  "LAP - Online application, OD facilitiy available": "Sulbha",
+  "UPI for NRI": "Sulbha",
+  "To be decided as per compliance meeting": "Sulbha",
+  "InstaBIZ - AI": "Kruthi",
+  "InstaBIZ - Creator": "Kruthi",
+  "Insta OD - AI": "Kruthi",
+  "Insta OD - Creator": "Kruthi",
+  "Ease of Business Banking - AI": "Kruthi",
+  "360 Business Banking - AI": "Kruthi",
+};
+
 function ApproverPanel({ rows, L }) {
-  const groups = {};
-  rows.filter((v) => v.brand_sr && !L.isDone(v.stage_brand_approval)).forEach((v) => { (groups[v.brand_sr] = groups[v.brand_sr] || []).push(v); });
-  const list = Object.entries(groups).map(([name, vs]) => ({ name, n: vs.length })).sort((a,b) => b.n-a.n || a.name.localeCompare(b.name));
-  const total = list.reduce((t,r) => t+r.n, 0);
-  return <section className="panel"><div className="panel-head"><h3>Brand approval pending by approver <span className="muted num">({total} videos)</span></h3></div>{list.length ? <table className="grp-tbl"><thead><tr><th>Approver / Brand SR</th><th className="n">Pending approvals</th></tr></thead><tbody>{list.map(r => <tr key={r.name}><td><b>{r.name}</b></td><td className="n num">{r.n}</td></tr>)}</tbody></table> : <div className="empty-state">No pending brand approvals.</div>}</section>;
+  const names = [...new Set(rows.map((v) => v.brand_approver || OCTOBER_APPROVERS[v.feature]).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const list = names.map((name) => ({
+    name,
+    n: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature]) === name && !L.isDone(v.stage_brand_approval)).length,
+  }));
+  const total = list.reduce((t, r) => t + r.n, 0);
+  return <section className="panel"><div className="panel-head"><h3>Brand approval pending by approver <span className="muted num">({total} videos)</span></h3></div>{list.length ? <table className="grp-tbl"><thead><tr><th>Brand Approver</th><th className="n">Pending approvals</th></tr></thead><tbody>{list.map(r => <tr key={r.name}><td><b>{r.name}</b></td><td className="n num">{r.n}</td></tr>)}</tbody></table> : <div className="empty-state">No brand approvers assigned.</div>}</section>;
 }

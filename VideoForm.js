@@ -6,7 +6,7 @@ import { Badge } from "./ui";
 
 const NAME_KEY = "tracker_your_name"; // convenience only: pre-fills "Your name"
 
-function toForm(v) {
+function toForm(v, stages = STAGES) {
   const f = {
     feature: v?.feature || "",
     month: v?.month || thisMonth(),
@@ -16,8 +16,10 @@ function toForm(v) {
     delivery_date: v?.delivery_date || "", go_live_date: v?.go_live_date || "",
     remarks: v?.remarks || "",
     durations: (v?.durations || []).slice().sort((a, b) => a - b),
+    planned_delivery_date: v?.planned_delivery_date || "",
+    brand_sr: v?.brand_sr || "",
   };
-  STAGES.forEach((s) => (f[s.col] = v?.[s.col] || "Pending"));
+  stages.forEach((s) => (f[s.col] = v?.[s.col] || "Pending"));
   return f;
 }
 
@@ -53,7 +55,7 @@ function monthOptions(videos, extra) {
   return [...set].sort();
 }
 
-export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOpenHandled }) {
+export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOpenHandled, stages = STAGES, october = false }) {
   const [mode, setMode] = useState("new"); // new | pick | edit | saved
   const [editingId, setEditingId] = useState(null);
   const [query, setQuery] = useState("");
@@ -80,11 +82,11 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
   const changedElsewhere = current && original._stamp && current.updated_at !== original._stamp;
 
   function startNew() {
-    const f = toForm(null);
+    const f = toForm(null, stages);
     setMode("new"); setEditingId(null); setOriginal(f); setForm(f); setAdding({}); setComment(""); setErr("");
   }
   function startEdit(v) {
-    const f = toForm(v);
+    const f = toForm(v, stages);
     setMode("edit"); setEditingId(v.id); setOriginal({ ...f, _stamp: v.updated_at }); setForm(f); setAdding({}); setComment(""); setErr("");
     window.scrollTo(0, 0);
   }
@@ -214,17 +216,18 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
       <form onSubmit={onSubmit} noValidate>
         <div className="card">
           <h2>Workflow status<span className="sub">Tap the current status of each step.</span></h2>
-          {STAGES.map((s, i) => {
+          {stages.map((s, i) => {
             const cur = form[s.col];
-            const opts = statusNames.includes(cur) ? statusNames : [...statusNames, cur];
-            const head = i === 0 || STAGES[i - 1].group !== s.group;
+            const opts = (october && s.col === "stage_ai_addendum") ? [...statusNames, "Not Applicable"].filter((x,i,a)=>a.indexOf(x)===i) : statusNames.filter((x) => x !== "Not Applicable");
+            const safeOpts = opts.includes(cur) ? opts : [...opts, cur];
+            const head = i === 0 || stages[i - 1].group !== s.group;
             return (
               <div key={s.col}>
                 {head && <div className="stage-group">{s.group}</div>}
                 <div className={"stage-row" + (head ? " first" : "")} role="group" aria-label={s.label}>
                   <div className="lbl"><i className="num">{i + 1}</i>{s.label}</div>
                   <div className="chips">
-                    {opts.map((o) => (
+                    {safeOpts.map((o) => (
                       <button
                         type="button"
                         key={o}
@@ -232,7 +235,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
                         aria-pressed={o === cur}
                         onClick={() => {
                           if (s.col === "stage_all_edits" && o === "Done") {
-                            const incomplete = STAGES.find((stage) => stage.col !== "stage_all_edits" && !L.isDone(form[stage.col]));
+                            const incomplete = stages.find((stage) => stage.col !== "stage_all_edits" && !L.isDone(form[stage.col]));
                             if (incomplete) {
                               setErr(`Stage ${incomplete.label} not completed.`);
                               return;
@@ -287,6 +290,8 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
             </div>
             {picker(LIST_FIELDS[4])}
             {picker(LIST_FIELDS[5])}
+            {october && <div className="field"><label htmlFor="f_planned_delivery">Planned delivery date</label><input className="input" id="f_planned_delivery" type="date" value={form.planned_delivery_date} onChange={(e) => set("planned_delivery_date", e.target.value)} /></div>}
+            {october && <div className="field"><label htmlFor="f_brand_sr">Brand SR</label><input className="input" id="f_brand_sr" value={form.brand_sr} onChange={(e) => set("brand_sr", e.target.value)} placeholder="Brand SR / approver" /></div>}
             <div className="field">
               <label htmlFor="f_delivery">Delivery date</label>
               <input className="input" id="f_delivery" type="date" value={form.delivery_date} onChange={(e) => set("delivery_date", e.target.value)} />

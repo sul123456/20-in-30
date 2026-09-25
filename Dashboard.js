@@ -7,7 +7,7 @@ import { Badge, PBar, Modal, stageClass } from "./ui";
 const EMPTY_FILTERS = { month: "", product: "", maker: "", agency: "", digital_fpr: "", brand_checker: "", status: "", liveFrom: "", liveTo: "" };
 const OVERALL = ["Completed", "In Progress", "Pending", "Overdue"];
 
-export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) {
+export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit, loadHistory, month, title = "Dashboard", approverDashboard = false }) {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
   const [search, setSearch] = useState("");
@@ -16,6 +16,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
 
   const rows = useMemo(() => videos.filter((v) => {
     const f = filters;
+    if (month && v.month !== month) return false;
     if (f.month && v.month !== f.month) return false;
     for (const k of ["product", "maker", "agency", "digital_fpr", "brand_checker"]) if (f[k] && v[k] !== f[k]) return false;
     if (f.status && L.overall(v) !== f.status) return false;
@@ -76,7 +77,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
       {/* ---------- headline ---------- */}
       <section className="hero">
         <div>
-          <p className="hero-head num">{pctText(completedPct)} <span>complete</span></p>
+          <p className="hero-kicker">{title}</p><p className="hero-head num">{pctText(completedPct)} <span>complete</span></p>
           <p className="hero-sub"><b>{counts.Completed} of {rows.length}</b> completed{activeFilters ? " (filtered)" : ""} · <b>{wentLive} of {completedVideos.length}</b> went live.</p>
         </div>
         <div>
@@ -128,6 +129,8 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
           </div>
         </div>
       </section>
+
+      {approverDashboard && <ApproverPanel rows={rows} L={L} />}
 
       <div className="grid-2">
         <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} />
@@ -217,7 +220,7 @@ export default function Dashboard({ videos, statuses, L, onEdit, loadHistory }) 
 
 
       {openId && (
-        <Detail v={videos.find((x) => x.id === openId)} L={L} loadHistory={loadHistory}
+        <Detail v={videos.find((x) => x.id === openId)} L={L} stages={stages} loadHistory={loadHistory}
           onClose={() => setOpenId(null)} onEdit={() => { const id = openId; setOpenId(null); onEdit(id); }} />
       )}
     </div>
@@ -246,7 +249,7 @@ function GroupPanel({ title, col, rows, L }) {
   );
 }
 
-function Detail({ v, L, onClose, onEdit, loadHistory }) {
+function Detail({ v, L, stages = STAGES, onClose, onEdit, loadHistory }) {
   const [history, setHistory] = useState(null);
   const [histErr, setHistErr] = useState("");
   useEffect(() => {
@@ -256,14 +259,14 @@ function Detail({ v, L, onClose, onEdit, loadHistory }) {
   }, [v?.id, v?.updated_at]);
   if (!v) return null;
   const st = L.overall(v);
-  const label = Object.fromEntries(STAGES.map((s) => [s.col, s.short]));
+  const label = Object.fromEntries(stages.map((s) => [s.col, s.short]));
   const Row = ({ k, children, wide }) => <div className={wide ? "wide" : ""}><dt>{k}</dt><dd>{children || "—"}</dd></div>;
   return (
     <Modal title={`#${v.sno} ${v.feature}`} onClose={onClose}>
       <div className="detail-top"><Badge status={st} /><span className="muted">Current step: <b className="ink">{L.currentStage(v)}</b></span><span className="grow" /><PBar value={L.completion(v)} /></div>
       <button className="btn btn-primary wide-btn" onClick={onEdit}>Update this video</button>
       <div className="card"><h2>Workflow</h2>
-        <div className="track">{STAGES.map((s) => (
+        <div className="track">{stages.map((s) => (
           <div key={s.col} className={"tstep t-" + stageClass(L.catOf, v[s.col])}><span>{s.short} <small>{wText(s.weight)}</small></span><small>{v[s.col]}</small></div>
         ))}</div>
       </div>
@@ -287,4 +290,13 @@ function Detail({ v, L, onClose, onEdit, loadHistory }) {
       </div>
     </Modal>
   );
+}
+
+
+function ApproverPanel({ rows, L }) {
+  const groups = {};
+  rows.filter((v) => v.brand_checker && !L.isDone(v.stage_brand_approval)).forEach((v) => { (groups[v.brand_checker] = groups[v.brand_checker] || []).push(v); });
+  const list = Object.entries(groups).map(([name, vs]) => ({ name, n: vs.length })).sort((a,b) => b.n-a.n || a.name.localeCompare(b.name));
+  const total = list.reduce((t,r) => t+r.n, 0);
+  return <section className="panel"><div className="panel-head"><h3>Brand approval pending by approver <span className="muted num">({total} videos)</span></h3></div>{list.length ? <table className="grp-tbl"><thead><tr><th>Approver / Brand SR</th><th className="n">Pending approvals</th></tr></thead><tbody>{list.map(r => <tr key={r.name}><td><b>{r.name}</b></td><td className="n num">{r.n}</td></tr>)}</tbody></table> : <div className="empty-state">No pending brand approvals.</div>}</section>;
 }

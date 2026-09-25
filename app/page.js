@@ -9,7 +9,7 @@ import VideoForm from "@/VideoForm";
 export default function Home() {
   const { videos, statuses, loading, error, live, reload, saveVideo, loadHistory } = useTracker();
   const L = useMemo(() => makeLogic(statuses), [statuses]);
-  const LOct = useMemo(() => makeLogic(statuses, OCTOBER_STAGES, { naCountsAsDone: true }), [statuses]);
+  const LOct = useMemo(() => makeLogic(statuses, OCTOBER_STAGES), [statuses]);
   const [tab, setTab] = useState("september");
   const [openId, setOpenId] = useState(null);
   const [editMonth, setEditMonth] = useState("2026-09");

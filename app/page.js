@@ -37,7 +37,7 @@ export default function Home() {
       <header className="topbar">
         <div className="topbar-in">
           <div className="brand">
-            <span className="brand-mark" aria-hidden="true" />
+            <img className="brand-image" src="/300-in-30.jpg" alt="300 in 30" />
             <h1>{APP_TITLE}</h1>
           </div>
           <span className={"live" + (live ? " on" : "")} title={live ? "Live: updates appear automatically" : "Connectingâ€¦"}>

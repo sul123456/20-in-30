@@ -28,8 +28,19 @@ button { cursor: pointer; }
 
 /* ---------- top bar ---------- */
 .topbar { position: sticky; top: 0; z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
-.topbar-in { max-width: 1280px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.brand { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
+.topbar-in { max-width: 1280px; margin: 0 auto; padding: 10px 16px 12px; display: flex; flex-direction: column; gap: 10px; }
+.hero-banner { position: relative; width: 100%; height: 180px; overflow: hidden; border-radius: 12px; background: #f3f4f6; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
+.hero-banner img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; }
+.hero-banner::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.48), rgba(0,0,0,.04) 60%, rgba(0,0,0,.08)); pointer-events: none; }
+.hero-banner-title { position: absolute; left: 22px; bottom: 18px; z-index: 1; color: #fff; font-size: 24px; font-weight: 800; letter-spacing: -.02em; text-shadow: 0 2px 8px rgba(0,0,0,.45); }
+.topbar-controls { display: flex; align-items: center; gap: 12px; width: 100%; }
+.brand { display: none; }
+.brand-image { display: none; }
+.brand h1 { display: none; }
+.live { flex: none; }
+.tabs { flex: 1 1 auto; min-width: 0; display: flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+@media (min-width: 640px) { .tabs { width: auto; } }
+
 .brand-mark { width: 12px; height: 26px; border-radius: 3px; background: linear-gradient(var(--bar) 0 50%, var(--accent) 50% 100%); flex: none; }
 .brand-image { width: 50px !important; height: 50px !important; min-width: 50px; min-height: 50px; max-width: 50px; max-height: 50px; aspect-ratio: 1 / 1; border-radius: 8px; object-fit: cover; object-position: center; flex: none; display: block; background: var(--surface); }
 .brand h1 { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; margin: 0; white-space: nowrap; }
@@ -297,5 +308,7 @@ td.n, th.n { text-align: right; width: 1%; }
   .tab { padding: 9px 4px; font-size: 12px; letter-spacing: -.01em; }
 }
 @media (max-width: 380px) {
+  .hero-banner { height: 100px; }
+  .hero-banner-title { font-size: 16px; }
   .tab { font-size: 11px; padding-left: 2px; padding-right: 2px; }
 }

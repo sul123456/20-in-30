@@ -37,7 +37,7 @@ export default function Home() {
       <header className="topbar">
         <div className="topbar-in">
           <div className="hero-banner">
-            <img src="/300-in-30.jpg" alt="300 in 30 Project Tracker" />
+            <img src="/300-in-30-banner.jpg" alt="300 in 30 Project Tracker" />
             <div className="hero-banner-title">{APP_TITLE}</div>
           </div>
           <div className="topbar-controls">

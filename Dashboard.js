@@ -157,7 +157,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
               <table className="proj-tbl">
                 <thead><tr>
                   <Th field="sno">S.NO</Th><th>Video</th><th>Maker</th><th>Brand Checker</th><th>Current step</th>
-                  <Th field="completion">Completion</Th><Th field="delivery_date">Delivery</Th><Th field="go_live_date">Go live</Th>
+                  <Th field="completion">Completion</Th>{october && <Th field="planned_delivery_date">Planned delivery</Th>}{october && <th>Brand SR</th>}<Th field="delivery_date">Delivery</Th><Th field="go_live_date">Go live</Th>
                   <Th field="status">Status</Th><Th field="updated_at">Last updated</Th><th>Remarks</th>
                 </tr></thead>
                 <tbody>
@@ -169,6 +169,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
                         <td className="feat"><b>{v.feature}</b><small>{[v.product, v.usage, durText(v)].filter(Boolean).join(" · ")}</small></td>
                         <td>{v.maker || "—"}</td><td>{v.brand_checker || "—"}</td><td>{L.currentStage(v)}</td>
                         <td><PBar value={L.completion(v)} /></td>
+                        {october && <td className="num">{fmtDate(v.planned_delivery_date)}</td>}{october && <td>{v.brand_sr || "—"}</td>}
                         <td className={"num" + (v.delivery_date && v.delivery_date < today && st !== "Completed" ? " late" : "")}>{fmtDate(v.delivery_date)}</td>
                         <td className={"num" + (st === "Overdue" ? " late" : "")}>{fmtDate(v.go_live_date)}</td>
                         <td><Badge status={st} /></td>
@@ -277,7 +278,7 @@ function Detail({ v, L, stages = STAGES, onClose, onEdit, loadHistory }) {
         <Row k="Duration">{durText(v)}</Row><Row k="Cost">{fmtCost(v)}</Row>
         <Row k="Maker">{v.maker}</Row><Row k="Agency">{v.agency}</Row>
         <Row k="Digital FPR">{v.digital_fpr}</Row><Row k="Brand Checker">{v.brand_checker}</Row>
-        <Row k="Delivery date">{fmtDate(v.delivery_date)}</Row><Row k="Go live date">{fmtDate(v.go_live_date)}</Row>
+        <Row k="Planned delivery date">{fmtDate(v.planned_delivery_date)}</Row><Row k="Brand SR">{v.brand_sr}</Row><Row k="Delivery date">{fmtDate(v.delivery_date)}</Row><Row k="Go live date">{fmtDate(v.go_live_date)}</Row>
         <Row k="Remarks" wide>{v.remarks}</Row>
       </dl><div className="meta">Last updated {fmtWhen(v.updated_at)}{v.updated_by ? ` by ${v.updated_by}` : ""}</div></div>
       <div className="card"><h2>Status history</h2>
@@ -295,7 +296,7 @@ function Detail({ v, L, stages = STAGES, onClose, onEdit, loadHistory }) {
 
 function ApproverPanel({ rows, L }) {
   const groups = {};
-  rows.filter((v) => v.brand_checker && !L.isDone(v.stage_brand_approval)).forEach((v) => { (groups[v.brand_checker] = groups[v.brand_checker] || []).push(v); });
+  rows.filter((v) => v.brand_sr && !L.isDone(v.stage_brand_approval)).forEach((v) => { (groups[v.brand_sr] = groups[v.brand_sr] || []).push(v); });
   const list = Object.entries(groups).map(([name, vs]) => ({ name, n: vs.length })).sort((a,b) => b.n-a.n || a.name.localeCompare(b.name));
   const total = list.reduce((t,r) => t+r.n, 0);
   return <section className="panel"><div className="panel-head"><h3>Brand approval pending by approver <span className="muted num">({total} videos)</span></h3></div>{list.length ? <table className="grp-tbl"><thead><tr><th>Approver / Brand SR</th><th className="n">Pending approvals</th></tr></thead><tbody>{list.map(r => <tr key={r.name}><td><b>{r.name}</b></td><td className="n num">{r.n}</td></tr>)}</tbody></table> : <div className="empty-state">No pending brand approvals.</div>}</section>;

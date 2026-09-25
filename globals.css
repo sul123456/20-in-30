@@ -179,6 +179,18 @@ td.n, th.n { text-align: right; width: 1%; }
 .sbar div { height: 100%; }
 .weights { font-size: 13px; color: var(--muted); padding: 10px 16px; border-top: 1px solid var(--line); }
 .grp-tbl td { white-space: nowrap; }
+.approver-tbl th, .approver-tbl td { vertical-align: middle; }
+@media (max-width: 480px) {
+  .approver-tbl { table-layout: fixed; width: 100%; }
+  .approver-tbl th, .approver-tbl td { padding: 9px 6px; }
+  .approver-tbl th { white-space: normal; overflow-wrap: anywhere; word-break: normal; line-height: 1.15; font-size: 10.5px; }
+  .approver-tbl th:nth-child(1), .approver-tbl td:nth-child(1) { width: 25%; }
+  .approver-tbl th:nth-child(2), .approver-tbl td:nth-child(2) { width: 25%; }
+  .approver-tbl th:nth-child(3), .approver-tbl td:nth-child(3) { width: 20%; }
+  .approver-tbl th:nth-child(4), .approver-tbl td:nth-child(4) { width: 30%; }
+  .approver-tbl td:first-child b { white-space: normal; overflow-wrap: anywhere; }
+}
+
 @media (max-width: 480px) {
   /* Keep the maker/product tables inside the phone viewport.
      The percentage is kept visible by allowing the bar to shrink, not the text. */

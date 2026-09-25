@@ -31,7 +31,7 @@ button { cursor: pointer; }
 .topbar-in { max-width: 1280px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
 .brand-mark { width: 12px; height: 26px; border-radius: 3px; background: linear-gradient(var(--bar) 0 50%, var(--accent) 50% 100%); flex: none; }
-.brand-image { width: 42px; height: 42px; border-radius: 8px; object-fit: contain; object-position: center; flex: none; display: block; background: var(--surface); }
+.brand-image { width: 50px !important; height: 50px !important; min-width: 50px; min-height: 50px; max-width: 50px; max-height: 50px; aspect-ratio: 1 / 1; border-radius: 8px; object-fit: cover; object-position: center; flex: none; display: block; background: var(--surface); }
 .brand h1 { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; margin: 0; white-space: nowrap; }
 .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
 .live i { width: 8px; height: 8px; border-radius: 50%; background: var(--pending); }
@@ -289,7 +289,7 @@ td.n, th.n { text-align: right; width: 1%; }
 .hist small { display: block; color: var(--muted); font-size: 12.5px; }
 
 @media (max-width: 520px) {
-  .brand-image { width: 38px; height: 38px; border-radius: 7px; }
+  .brand-image { width: 42px !important; height: 42px !important; min-width: 42px; min-height: 42px; max-width: 42px; max-height: 42px; border-radius: 7px; }
   .topbar-in { padding: 8px 10px; gap: 8px; }
   .brand { width: 100%; margin-right: 0; }
   .brand h1 { font-size: 16px; }

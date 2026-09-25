@@ -12,6 +12,7 @@ export default function Home() {
   const LOct = useMemo(() => makeLogic(statuses, OCTOBER_STAGES, { naCountsAsDone: true }), [statuses]);
   const [tab, setTab] = useState("september");
   const [openId, setOpenId] = useState(null);
+  const [editMonth, setEditMonth] = useState("2026-09");
 
   // Deep links: ?tab=update opens the form, ?video=12 opens video #12 for updating
   useEffect(() => {
@@ -61,9 +62,12 @@ export default function Home() {
           <div className="loading">Loading the trackerâ€¦</div>
          ) : tab === "september" ? (
           <Dashboard videos={videos} statuses={statuses} L={L} loadHistory={loadHistory} month="2026-09" title="September Dashboard"
-            onEdit={(id) => { setOpenId(id); goTab("update"); }} />
+            onEdit={(id) => { setEditMonth("2026-09"); setOpenId(id); goTab("update"); }} />
+        ) : tab === "october" ? (
+          <Dashboard videos={videos} statuses={statuses} L={LOct} stages={OCTOBER_STAGES} month="2026-10" title="October Dashboard" approverDashboard loadHistory={loadHistory}
+            onEdit={(id) => { setEditMonth("2026-10"); setOpenId(id); goTab("update"); }} />
         ) : (
-          <VideoForm videos={videos} statuses={statuses} L={L} saveVideo={saveVideo}
+          <VideoForm videos={videos} statuses={statuses} L={editMonth === "2026-10" ? LOct : L} stages={editMonth === "2026-10" ? OCTOBER_STAGES : undefined} october={editMonth === "2026-10"} saveVideo={saveVideo}
             openId={openId} onOpenHandled={() => setOpenId(null)} />
         )}
       </main>

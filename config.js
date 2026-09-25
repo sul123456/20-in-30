@@ -47,3 +47,21 @@ export const FALLBACK_STATUSES = [
   { name: "In Progress", sort_order: 20, category: "progress" },
   { name: "Done", sort_order: 90, category: "done" },
 ];
+
+
+// October-only workflow. September continues to use STAGES above unchanged.
+export const OCTOBER_STAGES = [
+  { col: "stage_brief_fpr", label: "Brief by Digital marketing FPR to maker", short: "Brief by Digital Marketing FPR", group: "Brief & Agency setup", weight: 5 },
+  { col: "stage_agreement", label: "Agency agreement status", short: "Agency agreement", group: "Brief & Agency setup", weight: 5 },
+  { col: "stage_ai_addendum", label: "Agency AI Addendum status", short: "AI Addendum", group: "Brief & Agency setup", weight: 5 },
+  { col: "stage_onboarding", label: "Agency Onboarding status", short: "Agency onboarding", group: "Brief & Agency setup", weight: 5 },
+  { col: "stage_brand_script", label: "Brand Script approval", short: "Brand script", group: "Script closure", weight: 20 },
+  { col: "stage_product_script", label: "Product Script Approval", short: "Product script", group: "Script closure", weight: 5 },
+  { col: "stage_bco_script", label: "BCO Script approval", short: "Product BCO script", group: "Script closure", weight: 5 },
+  { col: "stage_storyboarding", label: "Storyboarding", short: "Storyboarding", group: "Production", weight: 10 },
+  { col: "stage_legal", label: "Self Legal Approval", short: "Self legal", group: "Production", weight: 5 },
+  { col: "stage_first_cut", label: "1st cut", short: "1st cut", group: "Production", weight: 15 },
+  { col: "stage_brand_approval", label: "Brand approval on film", short: "Brand approval on film", group: "Production", weight: 5 },
+  { col: "stage_all_edits", label: "All edits delivered", short: "All edits delivered", group: "Production", weight: 15 },
+  { col: "stage_go_live", label: "Go Live", short: "Go Live", group: "Production", weight: 5 },
+];

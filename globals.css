@@ -37,7 +37,7 @@ button { cursor: pointer; }
 .live.on i { background: var(--done); }
 .tabs { display: flex; width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
 @media (min-width: 640px) { .tabs { width: auto; } }
-.tab { flex: 1; border: 0; background: none; padding: 9px 16px; border-radius: 999px; font-weight: 700; font-size: 14.5px; color: var(--muted); white-space: nowrap; }
+.tab { flex: 1 1 0; min-width: 0; border: 0; background: none; padding: 9px 10px; border-radius: 999px; font-weight: 700; font-size: 14.5px; color: var(--muted); white-space: nowrap; text-align: center; }
 .tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
 .notice { max-width: 1248px; margin: 12px 16px 0; padding: 10px 14px; border-radius: var(--radius); background: var(--overdue-bg); border: 1px solid var(--line); font-size: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 @media (min-width: 1280px) { .notice { margin: 12px auto 0; } }
@@ -286,3 +286,4 @@ td.n, th.n { text-align: right; width: 1%; }
 .hist li { padding: 8px 0; border-bottom: 1px solid var(--line); }
 .hist li:last-child { border-bottom: 0; }
 .hist small { display: block; color: var(--muted); font-size: 12.5px; }
+\n@media (max-width: 520px) {\n  .topbar-in { padding: 8px 10px; gap: 8px; }\n  .brand { width: 100%; margin-right: 0; }\n  .brand h1 { font-size: 16px; }\n  .tabs { width: 100%; min-width: 0; }\n  .tab { padding: 9px 4px; font-size: 12px; letter-spacing: -.01em; }\n}\n@media (max-width: 380px) {\n  .tab { font-size: 11px; padding-left: 2px; padding-right: 2px; }\n}\n

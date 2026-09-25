@@ -31,6 +31,7 @@ button { cursor: pointer; }
 .topbar-in { max-width: 1280px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
 .brand-mark { width: 12px; height: 26px; border-radius: 3px; background: linear-gradient(var(--bar) 0 50%, var(--accent) 50% 100%); flex: none; }
+.brand-image { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; object-position: center; flex: none; display: block; }
 .brand h1 { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; margin: 0; white-space: nowrap; }
 .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
 .live i { width: 8px; height: 8px; border-radius: 50%; background: var(--pending); }
@@ -286,4 +287,4 @@ td.n, th.n { text-align: right; width: 1%; }
 .hist li { padding: 8px 0; border-bottom: 1px solid var(--line); }
 .hist li:last-child { border-bottom: 0; }
 .hist small { display: block; color: var(--muted); font-size: 12.5px; }
-\n@media (max-width: 520px) {\n  .topbar-in { padding: 8px 10px; gap: 8px; }\n  .brand { width: 100%; margin-right: 0; }\n  .brand h1 { font-size: 16px; }\n  .tabs { width: 100%; min-width: 0; }\n  .tab { padding: 9px 4px; font-size: 12px; letter-spacing: -.01em; }\n}\n@media (max-width: 380px) {\n  .tab { font-size: 11px; padding-left: 2px; padding-right: 2px; }\n}\n
+\n@media (max-width: 520px) {\n  .brand-image { width: 38px; height: 38px; border-radius: 7px; }\n  .topbar-in { padding: 8px 10px; gap: 8px; }\n  .brand { width: 100%; margin-right: 0; }\n  .brand h1 { font-size: 16px; }\n  .tabs { width: 100%; min-width: 0; }\n  .tab { padding: 9px 4px; font-size: 12px; letter-spacing: -.01em; }\n}\n@media (max-width: 380px) {\n  .tab { font-size: 11px; padding-left: 2px; padding-right: 2px; }\n}\n

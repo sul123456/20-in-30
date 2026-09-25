@@ -334,7 +334,7 @@ function ApproverPanel({ rows, L }) {
   const list = names.map((name) => ({
     name,
     assigned: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature]) === name).length,
-    pending: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature]) === name && L.catOf(v.stage_brand_approval) === "pending").length,
+    pending: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature]) === name && L.isDone(v.stage_first_cut) && L.catOf(v.stage_brand_approval) === "pending").length,
     firstCutDone: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature]) === name && L.isDone(v.stage_first_cut)).length,
   }));
   const totalAssigned = list.reduce((t, r) => t + r.assigned, 0);

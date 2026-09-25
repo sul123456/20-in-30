@@ -31,7 +31,7 @@ button { cursor: pointer; }
 .topbar-in { max-width: 1280px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; min-width: 0; }
 .brand-mark { width: 12px; height: 26px; border-radius: 3px; background: linear-gradient(var(--bar) 0 50%, var(--accent) 50% 100%); flex: none; }
-.brand-image { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; object-position: center; flex: none; display: block; }
+.brand-image { width: 42px; height: 42px; border-radius: 8px; object-fit: contain; object-position: center; flex: none; display: block; background: var(--surface); }
 .brand h1 { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; margin: 0; white-space: nowrap; }
 .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--muted); }
 .live i { width: 8px; height: 8px; border-radius: 50%; background: var(--pending); }

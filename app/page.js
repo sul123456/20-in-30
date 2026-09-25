@@ -36,18 +36,20 @@ export default function Home() {
     <>
       <header className="topbar">
         <div className="topbar-in">
-          <div className="brand">
-            <img className="brand-image" src="/300-in-30.jpg" alt="300 in 30 Project Tracker" />
-            <h1>{APP_TITLE}</h1>
+          <div className="hero-banner">
+            <img src="/300-in-30.jpg" alt="300 in 30 Project Tracker" />
+            <div className="hero-banner-title">{APP_TITLE}</div>
           </div>
-          <span className={"live" + (live ? " on" : "")} title={live ? "Live: updates appear automatically" : "Connectingâ€¦"}>
-            <i />{live ? "Live" : "Connecting"}
-          </span>
-          <nav className="tabs" role="tablist">
-            <button role="tab" className="tab" aria-selected={tab === "september"} onClick={() => goTab("september")}>September Dashboard</button>
-            <button role="tab" className="tab tab-oct" aria-selected={tab === "october"} onClick={() => goTab("october")}>October Dashboard</button>
-            <button role="tab" className="tab" aria-selected={tab === "update"} onClick={() => goTab("update")}>Add / Update</button>
-          </nav>
+          <div className="topbar-controls">
+            <span className={"live" + (live ? " on" : "")} title={live ? "Live: updates appear automatically" : "Connectingâ€¦"}>
+              <i />{live ? "Live" : "Connecting"}
+            </span>
+            <nav className="tabs" role="tablist">
+              <button role="tab" className="tab" aria-selected={tab === "september"} onClick={() => goTab("september")}>September Dashboard</button>
+              <button role="tab" className="tab tab-oct" aria-selected={tab === "october"} onClick={() => goTab("october")}>October Dashboard</button>
+              <button role="tab" className="tab" aria-selected={tab === "update"} onClick={() => goTab("update")}>Add / Update</button>
+            </nav>
+          </div>
         </div>
       </header>
 

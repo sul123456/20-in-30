@@ -335,14 +335,15 @@ function ApproverPanel({ rows, L }) {
     name,
     assigned: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature]) === name).length,
     pending: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature]) === name && L.catOf(v.stage_brand_approval) === "pending").length,
+    firstCutDone: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature]) === name && L.isDone(v.stage_first_cut)).length,
   }));
   const totalAssigned = list.reduce((t, r) => t + r.assigned, 0);
   const totalPending = list.reduce((t, r) => t + r.pending, 0);
   return <section className="panel">
     <div className="panel-head"><h3>Brand approval dashboard <span className="muted num">({totalAssigned} videos assigned)</span></h3></div>
-    {list.length ? <table className="grp-tbl"><thead><tr><th>Brand Approver</th><th className="n">Videos assigned for approval</th><th className="n">Pending approval</th></tr></thead>
-      <tbody>{list.map(r => <tr key={r.name}><td><b>{r.name}</b></td><td className="n num">{r.assigned}</td><td className="n num">{r.pending}</td></tr>)}
-      <tr><td><b>Total</b></td><td className="n num"><b>{totalAssigned}</b></td><td className="n num"><b>{totalPending}</b></td></tr>
+    {list.length ? <table className="grp-tbl"><thead><tr><th>Brand Approver</th><th className="n">Videos assigned for approval</th><th className="n">First cut done</th><th className="n">Pending approval</th></tr></thead>
+      <tbody>{list.map(r => <tr key={r.name}><td><b>{r.name}</b></td><td className="n num">{r.assigned}</td><td className="n num">{r.firstCutDone}</td><td className="n num">{r.pending}</td></tr>)}
+      <tr><td><b>Total</b></td><td className="n num"><b>{totalAssigned}</b></td><td className="n num"><b>{list.reduce((t, r) => t + r.firstCutDone, 0)}</b></td><td className="n num"><b>{totalPending}</b></td></tr>
       </tbody></table> : <div className="empty-state">No brand approvers assigned.</div>}
   </section>;
 }

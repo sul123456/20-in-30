@@ -4,7 +4,7 @@
 // `stage_statuses` — change those in Supabase, not here.
 // =====================================================================
 
-export const APP_TITLE = "20 in 30 Project Tracker";
+export const APP_TITLE = "300 in 30 Project Tracker";
 
 // Workflow steps, in the same order as the Excel "Detailed status of films" columns.
 // `col` must match the column name in public.videos.

@@ -2,20 +2,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTracker } from "@/useTracker";
 import { makeLogic } from "@/logic";
-import { APP_TITLE } from "@/config";
+import { APP_TITLE, OCTOBER_STAGES } from "@/config";
 import Dashboard from "@/Dashboard";
 import VideoForm from "@/VideoForm";
 
 export default function Home() {
   const { videos, statuses, loading, error, live, reload, saveVideo, loadHistory } = useTracker();
   const L = useMemo(() => makeLogic(statuses), [statuses]);
-  const [tab, setTab] = useState("dashboard");
+  const LOct = useMemo(() => makeLogic(statuses, OCTOBER_STAGES, { naCountsAsDone: true }), [statuses]);
+  const [tab, setTab] = useState("september");
   const [openId, setOpenId] = useState(null);
 
   // Deep links: ?tab=update opens the form, ?video=12 opens video #12 for updating
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
     if (p.get("tab") === "update" || p.get("video")) setTab("update");
+    else if (p.get("tab") === "october") setTab("october");
+    else setTab("september");
   }, []);
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
@@ -40,7 +43,8 @@ export default function Home() {
             <i />{live ? "Live" : "Connecting"}
           </span>
           <nav className="tabs" role="tablist">
-            <button role="tab" className="tab" aria-selected={tab === "dashboard"} onClick={() => goTab("dashboard")}>Dashboard</button>
+            <button role="tab" className="tab" aria-selected={tab === "september"} onClick={() => goTab("september")}>September Dashboard</button>
+            <button role="tab" className="tab tab-oct" aria-selected={tab === "october"} onClick={() => goTab("october")}>October Dashboard</button>
             <button role="tab" className="tab" aria-selected={tab === "update"} onClick={() => goTab("update")}>Add / Update</button>
           </nav>
         </div>
@@ -55,8 +59,8 @@ export default function Home() {
       <main>
         {loading ? (
           <div className="loading">Loading the trackerâ€¦</div>
-        ) : tab === "dashboard" ? (
-          <Dashboard videos={videos} statuses={statuses} L={L} loadHistory={loadHistory}
+         ) : tab === "september" ? (
+          <Dashboard videos={videos} statuses={statuses} L={L} loadHistory={loadHistory} month="2026-09" title="September Dashboard"
             onEdit={(id) => { setOpenId(id); goTab("update"); }} />
         ) : (
           <VideoForm videos={videos} statuses={statuses} L={L} saveVideo={saveVideo}

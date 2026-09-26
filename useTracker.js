@@ -93,6 +93,12 @@ export function useTracker() {
     return row;
   }, []);
 
+  const loadAudit = useCallback(async () => {
+    const { data, error } = await supabase.from("audit_log").select("*").order("changed_at", { ascending: false }).limit(1000);
+    if (error) throw new Error(error.message);
+    return data || [];
+  }, []);
+
   const loadHistory = useCallback(async (videoId) => {
     const { data, error } = await supabase
       .from("status_history")
@@ -104,7 +110,7 @@ export function useTracker() {
     return data || [];
   }, []);
 
-  return { videos, statuses, loading, error, live, reload: load, saveVideo, loadHistory };
+  return { videos, statuses, loading, error, live, reload: load, saveVideo, loadHistory, loadAudit };
 }
 
 function friendlyError(e) {

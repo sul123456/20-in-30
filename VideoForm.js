@@ -55,7 +55,7 @@ function monthOptions(videos, extra) {
   return [...set].sort();
 }
 
-export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOpenHandled, stages = STAGES, october = false, identity = "" }) {
+export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOpenHandled, stages = STAGES, october = false, identity = "", onMonthChange }) {
   const [mode, setMode] = useState("new"); // new | pick | edit | saved
   const [editingId, setEditingId] = useState(null);
   const [query, setQuery] = useState("");
@@ -90,7 +90,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
     setMode("edit"); setEditingId(v.id); setOriginal({ ...f, _stamp: v.updated_at }); setForm(f); setAdding({}); setComment(""); setErr("");
     window.scrollTo(0, 0);
   }
-  const set = (k, val) => setForm((f) => ({ ...f, [k]: val }));
+  const set = (k, val) => { setForm((f) => ({ ...f, [k]: val })); if (k === "month" && onMonthChange) onMonthChange(val); };
 
   const statusNames = statuses.map((s) => s.name);
   const preview = useMemo(() => {

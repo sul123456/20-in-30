@@ -135,7 +135,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
 
       <div className="grid-2">
         <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} />
-        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
+        {isOctober && <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} />}\n        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
       </div>
 
       {/* ---------- all videos ---------- */}
@@ -158,7 +158,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
               <table className="proj-tbl">
                 <thead><tr>
                   <Th field="sno">S.NO</Th><th>Video</th><th>Maker</th><th>Brand Checker</th><th>Current step</th>
-                  <Th field="completion">Completion</Th>{isOctober && <Th field="planned_delivery_date">Planned delivery</Th>}{isOctober && <th>Brand SR</th>}<Th field="delivery_date">Delivery</Th><Th field="go_live_date">Go live</Th>
+                  <Th field="completion">Completion</Th><Th field="planned_delivery_date">Planned delivery</Th>{isOctober && <th>Brand SR</th>}<Th field="delivery_date">Actual delivery</Th><Th field="go_live_date">Go live</Th>
                   <Th field="status">Status</Th><Th field="updated_at">Last updated</Th><th>Remarks</th>
                 </tr></thead>
                 <tbody>
@@ -170,7 +170,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
                         <td className="feat"><b>{v.feature}</b><small>{[v.product, v.usage, durText(v)].filter(Boolean).join(" · ")}</small></td>
                         <td>{v.maker || "—"}</td><td>{v.brand_checker || "—"}</td><td>{L.currentStage(v)}</td>
                         <td><PBar value={L.completion(v)} /></td>
-                        {isOctober && <td className="num">{fmtDate(v.planned_delivery_date)}</td>}{isOctober && <td>{v.brand_sr || "—"}</td>}
+                        <td className="num">{fmtDate(v.planned_delivery_date)}</td>{isOctober && <td>{v.brand_sr || "—"}</td>}
                         <td className={"num" + (v.delivery_date && v.delivery_date < today && st !== "Completed" ? " late" : "")}>{fmtDate(v.delivery_date)}</td>
                         <td className={"num" + (st === "Overdue" ? " late" : "")}>{fmtDate(v.go_live_date)}</td>
                         <td><Badge status={st} /></td>
@@ -190,7 +190,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
                     <button onClick={() => setOpenId(v.id)}>
                       <div className="c-top"><b><span className="num muted">#{v.sno}</span> {v.feature}</b><Badge status={st} /></div>
                       <div className="c-meta">{[v.maker, v.product, L.currentStage(v)].filter(Boolean).join(" · ")}</div>
-                      <div className="c-bot"><PBar value={L.completion(v)} /><span className={"num" + (v.delivery_date && v.delivery_date < today && st !== "Completed" ? " late" : " muted")}>Delivery {fmtDate(v.delivery_date)}</span></div>
+                      <div className="c-bot"><PBar value={L.completion(v)} /><span className={"num" + (v.delivery_date && v.delivery_date < today && st !== "Completed" ? " late" : " muted")}>Actual delivery {fmtDate(v.delivery_date)}</span></div>
                       {v.remarks && <div className="c-rem">{v.remarks}</div>}
                     </button>
                   </li>
@@ -279,7 +279,7 @@ function Detail({ v, L, stages = STAGES, onClose, onEdit, loadHistory }) {
         <Row k="Duration">{durText(v)}</Row><Row k="Cost">{fmtCost(v)}</Row>
         <Row k="Maker">{v.maker}</Row><Row k="Agency">{v.agency}</Row>
         <Row k="Digital FPR">{v.digital_fpr}</Row><Row k="Brand Checker">{v.brand_checker}</Row>
-        <Row k="Planned delivery date">{fmtDate(v.planned_delivery_date)}</Row><Row k="Brand SR">{v.brand_sr}</Row><Row k="Delivery date">{fmtDate(v.delivery_date)}</Row><Row k="Go live date">{fmtDate(v.go_live_date)}</Row>
+        <Row k="Planned delivery date">{fmtDate(v.planned_delivery_date)}</Row><Row k="Brand SR">{v.brand_sr}</Row><Row k="Actual Delivery Date">{fmtDate(v.delivery_date)}</Row><Row k="Go live date">{fmtDate(v.go_live_date)}</Row>
         <Row k="Remarks" wide>{v.remarks}</Row>
       </dl><div className="meta">Last updated {fmtWhen(v.updated_at)}{v.updated_by ? ` by ${v.updated_by}` : ""}</div></div>
       <div className="card"><h2>Status history</h2>

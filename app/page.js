@@ -157,7 +157,7 @@ export default function Home() {
           <SignInPrompt onSignIn={signIn} error={authError} signingIn={signingIn} />
         ) : (
           <VideoForm videos={videos} statuses={statuses} L={editMonth === "2026-10" ? LOct : L} stages={editMonth === "2026-10" ? OCTOBER_STAGES : undefined} october={editMonth === "2026-10"} saveVideo={saveVideo}
-            openId={openId} onOpenHandled={() => setOpenId(null)} identity={identity} />
+            openId={openId} onOpenHandled={() => setOpenId(null)} identity={identity} onMonthChange={(m) => setEditMonth(m)} />
         )}
       </main>
     </>

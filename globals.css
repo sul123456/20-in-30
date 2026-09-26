@@ -312,3 +312,16 @@ td.n, th.n { text-align: right; width: 1%; }
   .hero-banner-title { font-size: 16px; }
   .tab { font-size: 11px; padding-left: 2px; padding-right: 2px; }
 }
+
+/* ---------- admin audit ---------- */
+.audit-summary { display:flex; align-items:center; gap:10px; justify-content:flex-end; }
+.audit-summary b { font-size:48px; line-height:1; color:var(--accent); }
+.audit-summary span { color:var(--muted); font-weight:700; }
+.audit-tbl td { white-space:nowrap; vertical-align:top; }
+.audit-tbl td:nth-child(3) small { display:block; color:var(--muted); margin-top:2px; }
+.audit-id { max-width:180px; overflow:hidden; text-overflow:ellipsis; color:var(--muted); font-size:12px; }
+.audit-op { display:inline-flex; padding:4px 8px; border-radius:999px; font-size:11px; font-weight:800; }
+.audit-insert { background:var(--done-bg); color:var(--done); }
+.audit-update { background:var(--progress-bg); color:var(--progress); }
+.audit-delete { background:var(--overdue-bg); color:var(--overdue); }
+@media (max-width: 760px) { .audit-summary { justify-content:flex-start; } .audit-filters { grid-template-columns:1fr; } }

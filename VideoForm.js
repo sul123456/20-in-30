@@ -55,7 +55,7 @@ function monthOptions(videos, extra) {
   return [...set].sort();
 }
 
-export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOpenHandled, stages = STAGES, october = false }) {
+export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOpenHandled, stages = STAGES, october = false, identity = "" }) {
   const [mode, setMode] = useState("new"); // new | pick | edit | saved
   const [editingId, setEditingId] = useState(null);
   const [query, setQuery] = useState("");
@@ -68,7 +68,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
   const [err, setErr] = useState("");
   const [saved, setSaved] = useState(null);
 
-  useEffect(() => { try { setName(localStorage.getItem(NAME_KEY) || ""); } catch {} }, []);
+  useEffect(() => { try { setName(identity || localStorage.getItem(NAME_KEY) || ""); } catch {} }, [identity]);
 
   // opened from the dashboard / a ?video= link
   useEffect(() => {
@@ -102,7 +102,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
     e.preventDefault();
     setErr("");
     if (!form.feature.trim()) { setErr("Add the feature (film name) so the team can recognise this video."); return; }
-    if (!name.trim()) { setErr("Enter your name so the team knows who made this update."); return; }
+    if (!name.trim()) { setErr("Your signed-in Google identity could not be determined. Please sign out and sign in again."); return; }
     const { _stamp, ...orig } = original;
     const patch = mode === "new" ? toFields(form) : diff(orig, form);
     if (mode !== "new" && Object.keys(patch).length === 0 && !comment.trim()) { setErr("Nothing has changed yet."); return; }

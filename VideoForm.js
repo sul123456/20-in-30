@@ -290,7 +290,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
             </div>
             {picker(LIST_FIELDS[4])}
             {picker(LIST_FIELDS[5])}
-            {october && <div className="field"><label htmlFor="f_planned_delivery">Planned delivery date</label><input className="input" id="f_planned_delivery" type="date" value={form.planned_delivery_date} onChange={(e) => set("planned_delivery_date", e.target.value)} /></div>}
+            <div className="field"><label htmlFor="f_planned_delivery">Planned Delivery Date</label><input className="input" id="f_planned_delivery" type="date" value={form.planned_delivery_date} onChange={(e) => set("planned_delivery_date", e.target.value)} /></div>
             {october && <div className="field"><label htmlFor="f_brand_sr">Brand SR</label><input className="input" id="f_brand_sr" value={form.brand_sr} onChange={(e) => set("brand_sr", e.target.value)} placeholder="Brand SR / approver" /></div>}
             <div className="field">
               <label htmlFor="f_delivery">Actual Delivery Date</label>

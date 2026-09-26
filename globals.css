@@ -304,8 +304,12 @@ td.n, th.n { text-align: right; width: 1%; }
   .topbar-in { padding: 8px 10px; gap: 8px; }
   .brand { width: 100%; margin-right: 0; }
   .brand h1 { font-size: 16px; }
-  .tabs { width: 100%; min-width: 0; }
-  .tab { padding: 9px 4px; font-size: 12px; letter-spacing: -.01em; }
+  /* Mobile navigation: use a 2x2 grid so the longer tab labels never overlap. */
+  .topbar-controls { flex-wrap: wrap; gap: 8px; }
+  .topbar-controls > .live { order: 0; }
+  .tabs { order: 2; width: 100%; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; }
+  .tab { min-width: 0; min-height: 42px; padding: 7px 5px; font-size: 12px; line-height: 1.15; letter-spacing: -.01em; white-space: normal; overflow-wrap: anywhere; }
+  .auth-mini { order: 1; margin-left: auto; max-width: 72%; }
 }
 @media (max-width: 380px) {
   .hero-banner { height: 100px; }

@@ -6,6 +6,7 @@ import { makeLogic } from "@/logic";
 import { APP_TITLE, OCTOBER_STAGES } from "@/config";
 import Dashboard from "@/Dashboard";
 import VideoForm from "@/VideoForm";
+import AdminAudit from "@/AdminAudit";
 
 function identityFromUser(user) {
   return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "";
@@ -29,7 +30,7 @@ function SignInPrompt({ onSignIn, error, signingIn }) {
 }
 
 export default function Home() {
-  const { videos, statuses, loading, error, live, reload, saveVideo, loadHistory } = useTracker();
+  const { videos, statuses, loading, error, live, reload, saveVideo, loadHistory, loadAudit } = useTracker();
   const L = useMemo(() => makeLogic(statuses), [statuses]);
   const LOct = useMemo(() => makeLogic(statuses, OCTOBER_STAGES), [statuses]);
   const [tab, setTab] = useState("september");
@@ -39,6 +40,9 @@ export default function Home() {
   const [authReady, setAuthReady] = useState(false);
   const [authError, setAuthError] = useState("");
   const [signingIn, setSigningIn] = useState(false);
+  const [audit, setAudit] = useState([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditError, setAuditError] = useState("");
 
   useEffect(() => {
     if (!supabase) {
@@ -68,6 +72,7 @@ export default function Home() {
     if (p.get("video")) setTab("update");
     else if (p.get("tab") === "update") setTab("update");
     else if (p.get("tab") === "october") setTab("october");
+    else if (p.get("tab") === "audit") setTab("audit");
     else setTab("september");
   }, []);
 
@@ -103,6 +108,15 @@ export default function Home() {
     setOpenId(null);
   };
 
+  const isAdmin = String(user?.email || "").toLowerCase() === "sulbhaaneja@gmail.com";
+  const refreshAudit = async () => {
+    if (!isAdmin) return;
+    setAuditLoading(true); setAuditError("");
+    try { setAudit(await loadAudit()); } catch (e) { setAuditError(e.message || "Could not load audit trail."); }
+    finally { setAuditLoading(false); }
+  };
+  useEffect(() => { if (isAdmin && tab === "audit") refreshAudit(); }, [isAdmin, tab]);
+
   const goTab = (t) => { setTab(t); window.scrollTo(0, 0); };
 
   const updateTab = () => { setTab("update"); window.scrollTo(0, 0); };
@@ -125,6 +139,7 @@ export default function Home() {
               <button role="tab" className="tab" aria-selected={tab === "september"} onClick={() => goTab("september")}>September Dashboard</button>
               <button role="tab" className="tab tab-oct" aria-selected={tab === "october"} onClick={() => goTab("october")}>October Dashboard</button>
               <button role="tab" className="tab" aria-selected={tab === "update"} onClick={updateTab}>Add / Update</button>
+              {isAdmin && <button role="tab" className="tab tab-admin" aria-selected={tab === "audit"} onClick={() => goTab("audit")}>Admin Audit</button>}
             </nav>
             {authReady && user && (
               <div className="auth-mini">
@@ -151,6 +166,8 @@ export default function Home() {
         ) : tab === "october" ? (
           <Dashboard videos={videos} statuses={statuses} L={LOct} stages={OCTOBER_STAGES} month="2026-10" title="October Dashboard" approverDashboard loadHistory={loadHistory}
             onEdit={(id) => { setEditMonth("2026-10"); setOpenId(id); goTab("update"); }} />
+        ) : tab === "audit" ? (
+          <AdminAudit user={user} audit={audit} loading={auditLoading} error={auditError} reload={refreshAudit} />
         ) : !authReady ? (
           <div className="loading">Checking sign-in…</div>
         ) : !user ? (

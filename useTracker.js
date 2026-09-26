@@ -94,9 +94,46 @@ export function useTracker() {
   }, []);
 
   const loadAudit = useCallback(async () => {
-    const { data, error } = await supabase.from("audit_log").select("*").order("changed_at", { ascending: false }).limit(1000);
-    if (error) throw new Error(error.message);
-    return data || [];
+    const [auditResult, historyResult] = await Promise.all([
+      supabase.from("audit_log").select("*").order("changed_at", { ascending: false }).limit(1000),
+      supabase.from("status_history").select("id,video_id,stage,previous_status,new_status,changed_by,changed_at,comments,videos(sno,feature,month)").order("changed_at", { ascending: false }).limit(1000),
+    ]);
+    if (auditResult.error) throw new Error(auditResult.error.message);
+    if (historyResult.error) throw new Error(historyResult.error.message);
+
+    const liveAudit = (auditResult.data || []).map((a) => ({ ...a, event_source: "audit" }));
+    const historicalStatus = (historyResult.data || []).map((h) => ({
+      id: `history-${h.id}`,
+      event_id: null,
+      table_name: "public.status_history",
+      operation: "HISTORY",
+      row_id: h.video_id,
+      actor_user_id: null,
+      actor_email: null,
+      actor_name: h.changed_by || "Unknown",
+      actor_role: null,
+      changed_at: h.changed_at,
+      old_row: {
+        sno: h.videos?.sno,
+        feature: h.videos?.feature,
+        month: h.videos?.month,
+        stage: h.stage,
+        status: h.previous_status,
+      },
+      new_row: {
+        sno: h.videos?.sno,
+        feature: h.videos?.feature,
+        month: h.videos?.month,
+        stage: h.stage,
+        status: h.new_status,
+        comments: h.comments,
+      },
+      event_source: "status_history",
+    }));
+
+    return [...liveAudit, ...historicalStatus]
+      .sort((a, b) => new Date(b.changed_at).getTime() - new Date(a.changed_at).getTime())
+      .slice(0, 1000);
   }, []);
 
   const loadHistory = useCallback(async (videoId) => {

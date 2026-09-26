@@ -2,7 +2,11 @@
 
 import { useMemo, useState } from "react";
 
-const ADMIN_EMAIL = "sulbhaaneja@gmail.com";
+const ADMIN_EMAILS = ["sulbhaaneja@gmail.com", "roopesh.kajrolkar@gmail.com"];
+
+export function isAuditAdmin(user) {
+  return ADMIN_EMAILS.includes(String(user?.email || "").toLowerCase());
+}
 
 function actor(a) {
   return a.actor_name || a.actor_email || "Unknown";
@@ -31,7 +35,7 @@ export default function AdminAudit({ user, audit, loading, error, reload }) {
     });
   }, [audit, search, op, days]);
 
-  if (!user || String(user.email || "").toLowerCase() !== ADMIN_EMAIL) {
+  if (!user || !isAuditAdmin(user)) {
     return <div className="dash"><section className="panel"><div className="empty-state"><b>Access denied</b>This section is restricted to the tracker administrator.</div></section></div>;
   }
 
@@ -41,7 +45,7 @@ export default function AdminAudit({ user, audit, loading, error, reload }) {
         <div>
           <p className="hero-kicker">Admin Console</p>
           <p className="hero-head">Audit <span>Trail</span></p>
-          <p className="hero-sub">Append-only record of tracker data changes. Only {ADMIN_EMAIL} can view this console.</p>
+          <p className="hero-sub">Append-only record of tracker data changes. Only authorized tracker administrators can view this console.</p>
         </div>
         <div className="audit-summary"><b>{rows.length}</b><span>events shown</span></div>
       </section>

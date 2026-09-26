@@ -108,7 +108,7 @@ export default function Home() {
     setOpenId(null);
   };
 
-  const isAdmin = String(user?.email || "").toLowerCase() === "sulbhaaneja@gmail.com";
+  const isAdmin = ["sulbhaaneja@gmail.com", "roopesh.kajrolkar@gmail.com"].includes(String(user?.email || "").toLowerCase());
   const refreshAudit = async () => {
     if (!isAdmin) return;
     setAuditLoading(true); setAuditError("");

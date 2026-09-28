@@ -10,7 +10,7 @@ const OVERALL = ["Completed", "In Progress", "Pending", "Overdue"];
 
 export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit, loadHistory, month, title = "Dashboard", approverDashboard = false }) {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ field: "completion", dir: "desc" });
   const [openId, setOpenId] = useState(null);

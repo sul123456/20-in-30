@@ -120,8 +120,33 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
   async function onSubmit(e) {
     e.preventDefault();
     setErr("");
-    if (!form.video_name.trim() && mode === "new") { setErr("Video Name is required. Enter the unique alphanumeric video code."); return; }
-    if (!form.feature.trim()) { setErr("Add the feature (film name) so the team can recognise this video."); return; }
+    if (mode === "new") {
+      const missing = [];
+      const requiredFields = [
+        ["video_name", "Video Name"],
+        ["feature", "Feature"],
+        ["month", "Month"],
+        ["product", "Product"],
+        ["usage", "Usage"],
+        ["maker", "Maker"],
+        ["agency", "Agency"],
+        ["digital_fpr", "Digital FPR"],
+        ["brand_checker", "Brand Checker"],
+        ["cost", "Cost"],
+        ["planned_delivery_date", "Planned Delivery Date"],
+        ["delivery_date", "Actual Delivery Date"],
+        ["go_live_date", "Go-live Date"],
+      ];
+      requiredFields.forEach(([key, label]) => {
+        if (!String(form[key] ?? "").trim()) missing.push(label);
+      });
+      if (!form.durations.length) missing.push("Duration");
+      if (october && !form.brand_sr.trim()) missing.push("Brand SR");
+      if (missing.length) {
+        setErr(`Please complete: ${missing.join(", ")}.`);
+        return;
+      }
+    }
     if (!name.trim()) { setErr("Your signed-in Google identity could not be determined. Please sign out and sign in again."); return; }
     const { _stamp, ...orig } = original;
     const patch = mode === "new" ? toFields(form) : diff(orig, form);

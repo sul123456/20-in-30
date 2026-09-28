@@ -51,7 +51,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     .sort((a, b) => b.why.length - a.why.length || (a.v.delivery_date || "9").localeCompare(b.v.delivery_date || "9"));
 
   const q = search.trim().toLowerCase();
-  const list = rows.filter((v) => !q || [v.feature, v.product, v.maker].some((x) => String(x || "").toLowerCase().includes(q)));
+  const list = rows.filter((v) => !q || [v.video_name, v.feature, v.product, v.maker].some((x) => String(x || "").toLowerCase().includes(q)));
   const rank = { Overdue: 0, Pending: 1, "In Progress": 2, Completed: 3 };
   list.sort((a, b) => {
     const d = sort.dir === "asc" ? 1 : -1;
@@ -72,6 +72,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     const data = list.map((v) => {
       const row = {
         "S.NO": v.sno,
+        "Video Name": v.video_name || "",
         "Video": v.feature || "",
         "Product": v.product || "",
         "Usage": v.usage || "",
@@ -177,7 +178,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
         <div className="panel-head">
           <h3>All videos <span className="muted num">({list.length})</span></h3>
           <button className="btn btn-sm excel-btn" type="button" onClick={downloadExcel} disabled={!list.length}>Download Excel</button>
-          <input className="input search" type="search" placeholder="Search feature, product or maker" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input className="input search" type="search" placeholder="Search video name, feature, product or maker" value={search} onChange={(e) => setSearch(e.target.value)} />
           <select className="input sort-mobile" aria-label="Sort by" value={`${sort.field}:${sort.dir}`} onChange={(e) => { const [field, dir] = e.target.value.split(":"); setSort({ field, dir }); }}>
             <option value="completion:desc">Sort: completion</option>
             <option value="status:asc">Sort: status</option>
@@ -202,7 +203,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
                     return (
                       <tr key={v.id} className={st === "Overdue" ? "is-overdue" : ""} tabIndex={0} onClick={() => setOpenId(v.id)} onKeyDown={(e) => e.key === "Enter" && setOpenId(v.id)}>
                         <td className="num">{v.sno}</td>
-                        <td className="feat"><b>{v.feature}</b><small>{[v.product, v.usage, durText(v)].filter(Boolean).join(" · ")}</small></td>
+                        <td className="feat"><b>{v.video_name || "Video name not yet entered"}</b><small>{[v.feature, v.product, v.usage, durText(v)].filter(Boolean).join(" · ")}</small></td>
                         <td>{v.maker || "—"}</td><td>{v.brand_checker || "—"}</td><td>{L.currentStage(v)}</td>
                         <td><PBar value={L.completion(v)} /></td>
                         <td className="num">{fmtDate(v.planned_delivery_date)}</td>{isOctober && <td>{v.brand_sr || "—"}</td>}
@@ -223,7 +224,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
                 return (
                   <li key={v.id} className={st === "Overdue" ? "is-overdue" : ""}>
                     <button onClick={() => setOpenId(v.id)}>
-                      <div className="c-top"><b><span className="num muted">#{v.sno}</span> {v.feature}</b><Badge status={st} /></div>
+                      <div className="c-top"><b><span className="num muted">#{v.sno}</span> {v.video_name || "Video name not yet entered"}</b><Badge status={st} /></div>\n                      <div className="c-meta">{v.feature}</div>
                       <div className="c-meta">{[v.maker, v.product, L.currentStage(v)].filter(Boolean).join(" · ")}</div>
                       <div className="c-bot"><PBar value={L.completion(v)} /><span className={"num" + (v.delivery_date && v.delivery_date < today && st !== "Completed" ? " late" : " muted")}>Actual delivery {fmtDate(v.delivery_date)}</span></div>
                       {v.remarks && <div className="c-rem">{v.remarks}</div>}
@@ -243,7 +244,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
             {attention.map(({ v, why }) => (
               <li key={v.id}>
                 <button onClick={() => setOpenId(v.id)}>
-                  <span className="att-main"><b><span className="num muted">#{v.sno}</span> {v.feature}</b>
+                  <span className="att-main"><b><span className="num muted">#{v.sno}</span> {v.video_name || "Video name not yet entered"}</b>
                     <small>{[v.maker, L.currentStage(v), `updated ${fmtWhen(v.updated_at)}`].filter(Boolean).join(" · ")}</small>
                     {v.remarks && <small className="att-rem">{v.remarks}</small>}
                   </span>
@@ -310,7 +311,7 @@ function Detail({ v, L, stages = STAGES, onClose, onEdit, loadHistory }) {
       <div className="card"><dl className="dl">
         <Row k="S.NO">{v.sno}</Row><Row k="Month">{monthLabel(v.month)}</Row>
         <Row k="Product">{v.product}</Row><Row k="Usage">{v.usage}</Row>
-        <Row k="Feature" wide>{v.feature}</Row>
+        <Row k="Video Name" wide>{v.video_name}</Row>\n        <Row k="Feature" wide>{v.feature}</Row>
         <Row k="Duration">{durText(v)}</Row><Row k="Cost">{fmtCost(v)}</Row>
         <Row k="Maker">{v.maker}</Row><Row k="Agency">{v.agency}</Row>
         <Row k="Digital FPR">{v.digital_fpr}</Row><Row k="Brand Checker">{v.brand_checker}</Row>

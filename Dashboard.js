@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { STAGES, LIST_FIELDS, STALE_DAYS } from "./config";
 import { monthLabel, fmtDate, fmtWhen, fmtCost, durText, pctText, wText, todayISO, thisMonth } from "./logic";
 import { Badge, PBar, Modal, stageClass } from "./ui";
+import * as XLSX from "xlsx";
 
 const EMPTY_FILTERS = { month: "", product: "", maker: "", agency: "", digital_fpr: "", brand_checker: "", status: "", liveFrom: "", liveTo: "" };
 const OVERALL = ["Completed", "In Progress", "Pending", "Overdue"];
@@ -67,6 +68,38 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     }
   });
   const sortBy = (field) => setSort((s) => (s.field === field ? { field, dir: s.dir === "asc" ? "desc" : "asc" } : { field, dir: field === "completion" || field === "updated_at" ? "desc" : "asc" }));
+  const downloadExcel = () => {
+    const data = list.map((v) => {
+      const row = {
+        "S.NO": v.sno,
+        "Video": v.feature || "",
+        "Product": v.product || "",
+        "Usage": v.usage || "",
+        "Maker": v.maker || "",
+        "Agency": v.agency || "",
+        "Digital FPR": v.digital_fpr || "",
+        "Brand Checker": v.brand_checker || "",
+        "Duration": durText(v),
+        "Cost (₹)": v.cost ?? v.cost_note ?? "",
+        "Planned Delivery": v.planned_delivery_date || "",
+        "Actual Delivery": v.delivery_date || "",
+        "Go Live": v.go_live_date || "",
+        "Current Step": L.currentStage(v) || "",
+        "Status": L.overall(v),
+        "Completion": Math.round(L.completion(v)) + "%",
+        "Last Updated": v.updated_at ? fmtWhen(v.updated_at) : "",
+        "Remarks": v.remarks || "",
+      };
+      if (isOctober) row["Brand SR"] = v.brand_sr || "";
+      return row;
+    });
+    const ws = XLSX.utils.json_to_sheet(data);
+    ws["!cols"] = Object.keys(data[0] || {}).map((key) => ({ wch: Math.min(35, Math.max(12, key.length + 2)) }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, monthLabel(month) + " Videos");
+    const suffix = activeFilters || q ? "-filtered" : "";
+    XLSX.writeFile(wb, `300-in-30-${month || "all"}${suffix}.xlsx`);
+  };
   const Th = ({ field, children }) => (
     <th><button className="sortbtn" data-active={sort.field === field} onClick={() => sortBy(field)}>{children} {sort.field === field ? (sort.dir === "asc" ? "↑" : "↓") : ""}</button></th>
   );
@@ -135,13 +168,15 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
 
       <div className="grid-2">
         <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} />
-        <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} />\n        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
+        <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} />
+        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
       </div>
 
       {/* ---------- all videos ---------- */}
       <section className="panel">
         <div className="panel-head">
           <h3>All videos <span className="muted num">({list.length})</span></h3>
+          <button className="btn btn-sm excel-btn" type="button" onClick={downloadExcel} disabled={!list.length}>Download Excel</button>
           <input className="input search" type="search" placeholder="Search feature, product or maker" value={search} onChange={(e) => setSearch(e.target.value)} />
           <select className="input sort-mobile" aria-label="Sort by" value={`${sort.field}:${sort.dir}`} onChange={(e) => { const [field, dir] = e.target.value.split(":"); setSort({ field, dir }); }}>
             <option value="completion:desc">Sort: completion</option>

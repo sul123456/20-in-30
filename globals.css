@@ -58,7 +58,7 @@ button { cursor: pointer; }
 /* ---------- buttons & inputs ---------- */
 .btn { border: 1px solid var(--line); background: var(--surface); padding: 11px 16px; border-radius: var(--radius); font-weight: 700; font-size: 15px; min-height: 46px; }
 .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); padding: 12px 22px; }
-.btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+.btn-primary:disabled { opacity: .55; cursor: not-allowed; }\n.btn-danger { background: var(--surface); color: var(--overdue); border-color: var(--overdue); }\n.btn-danger:disabled { opacity: .55; cursor: not-allowed; }
 .btn-sm { min-height: 36px; padding: 7px 12px; font-size: 14px; }
 .wide-btn { width: 100%; margin: 4px 0 12px; }
 .input, select.input, textarea.input { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-2); font-size: 16px; }

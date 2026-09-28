@@ -9,6 +9,7 @@ const NAME_KEY = "tracker_your_name"; // convenience only: pre-fills "Your name"
 
 function toForm(v, stages = STAGES) {
   const f = {
+    video_name: v?.video_name || "",
     feature: v?.feature || "",
     month: v?.month || thisMonth(),
     product: v?.product || "", usage: v?.usage || "", maker: v?.maker || "", agency: v?.agency || "",
@@ -32,6 +33,7 @@ function toFields(f) {
   if (!f.cost.trim()) { out.cost = ""; out.cost_note = ""; }
   else if (raw !== "" && !isNaN(Number(raw))) { out.cost = String(Number(raw)); out.cost_note = ""; }
   else { out.cost = ""; out.cost_note = f.cost.trim(); }
+  out.video_name = f.video_name.trim();
   out.feature = f.feature.trim();
   return out;
 }
@@ -118,6 +120,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
   async function onSubmit(e) {
     e.preventDefault();
     setErr("");
+    if (!form.video_name.trim() && mode === "new") { setErr("Video Name is required. Enter the unique alphanumeric video code."); return; }
     if (!form.feature.trim()) { setErr("Add the feature (film name) so the team can recognise this video."); return; }
     if (!name.trim()) { setErr("Your signed-in Google identity could not be determined. Please sign out and sign in again."); return; }
     const { _stamp, ...orig } = original;
@@ -169,7 +172,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
   if (mode === "pick") {
     const q = query.trim().toLowerCase();
     const list = videos
-      .filter((v) => !q || [v.feature, v.product, v.maker, v.agency, String(v.sno)].some((x) => String(x || "").toLowerCase().includes(q)))
+      .filter((v) => !q || [v.video_name, v.feature, v.product, v.maker, v.agency, String(v.sno)].some((x) => String(x || "").toLowerCase().includes(q)))
       .sort((a, b) => L.completion(b) - L.completion(a) || a.sno - b.sno);
     return (
       <div className="form-wrap">
@@ -181,7 +184,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
             {list.length ? list.map((v) => (
               <button key={v.id} className="pick" onClick={() => startEdit(v)}>
                 <span className="sno-pill num">#{v.sno}</span>
-                <span className="grow"><b>{v.feature}</b><small>{[v.maker, v.product, L.currentStage(v)].filter(Boolean).join(" · ")}</small></span>
+                <span className="grow"><b>{v.video_name || "Video name not yet entered"}</b><small>{[v.feature, v.maker, v.product, L.currentStage(v)].filter(Boolean).join(" · ")}</small></span>
                 <Badge status={L.overall(v)} />
               </button>
             )) : <div className="empty-state"><b>No videos match</b>Try a different word.</div>}

@@ -276,6 +276,10 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
         <div className="card">
           <h2>Video details{mode === "new" && <span className="sub">S.NO is added automatically when you save.</span>}</h2>
           <div className="field">
+            <label htmlFor="f_video_name">Video Name <span className="req">*</span></label>
+            <input className="input" id="f_video_name" value={form.video_name} onChange={(e) => set("video_name", e.target.value)} placeholder="Unique alphanumeric video code" autoComplete="off" />
+          </div>
+          <div className="field">
             <label htmlFor="f_feature">Feature <span className="req">*</span></label>
             <input className="input" id="f_feature" value={form.feature} onChange={(e) => set("feature", e.target.value)} placeholder="Film / feature name" autoComplete="off" />
           </div>

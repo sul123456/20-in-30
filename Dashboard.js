@@ -135,7 +135,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
 
       <div className="grid-2">
         <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} />
-        {isOctober && <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} />}\n        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
+        <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} />\n        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
       </div>
 
       {/* ---------- all videos ---------- */}

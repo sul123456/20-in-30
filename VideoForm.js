@@ -228,7 +228,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
     const isNew = adding[f.col] || (form[f.col] && !opts.includes(form[f.col]));
     return (
       <div className="field" key={f.col}>
-        <label htmlFor={"f_" + f.col}>{f.label}</label>
+        <label htmlFor={"f_" + f.col}>{f.label}{f.required && <span className="req"> *</span>}</label>
         {!isNew ? (
           <select className="input" id={"f_" + f.col} value={form[f.col]}
             onChange={(e) => { if (e.target.value === "__new") { setAdding((a) => ({ ...a, [f.col]: true })); set(f.col, ""); } else set(f.col, e.target.value); }}>
@@ -310,16 +310,16 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
           </div>
           <div className="grid2">
             <div className="field">
-              <label htmlFor="f_month">Month</label>
+              <label htmlFor="f_month">Month <span className="req">*</span></label>
               <select className="input" id="f_month" value={form.month} onChange={(e) => set("month", e.target.value)}>
                 {months.map((m) => <option key={m} value={m}>{monthLabel(m)}</option>)}
               </select>
             </div>
-            {picker(LIST_FIELDS[0])}
-            {picker(LIST_FIELDS[1])}
-            {picker(LIST_FIELDS[2])}
+            {picker({ ...LIST_FIELDS[0], required: true })}
+            {picker({ ...LIST_FIELDS[1], required: true })}
+            {picker({ ...LIST_FIELDS[2], required: true })}
             <div className="field span2">
-              <span className="lbl">Duration (tick every cut being made)</span>
+              <span className="lbl">Duration (tick every cut being made) <span className="req">*</span></span>
               <div className="chips">
                 {DURATIONS.map((d) => {
                   const on = form.durations.includes(d);
@@ -332,21 +332,21 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
                 })}
               </div>
             </div>
-            {picker(LIST_FIELDS[3])}
+            {picker({ ...LIST_FIELDS[3], required: true })}
             <div className="field">
-              <label htmlFor="f_cost">Cost (₹)</label>
+              <label htmlFor="f_cost">Cost (₹) <span className="req">*</span></label>
               <input className="input num" id="f_cost" inputMode="decimal" value={form.cost} onChange={(e) => set("cost", e.target.value)} placeholder="Amount, or TBC" />
             </div>
-            {picker(LIST_FIELDS[4])}
-            {picker(LIST_FIELDS[5])}
-            <div className="field"><label htmlFor="f_planned_delivery">Planned Delivery Date</label><input className="input" id="f_planned_delivery" type="date" value={form.planned_delivery_date} onChange={(e) => set("planned_delivery_date", e.target.value)} /></div>
-            {october && <div className="field"><label htmlFor="f_brand_sr">Brand SR</label><input className="input" id="f_brand_sr" value={form.brand_sr} onChange={(e) => set("brand_sr", e.target.value)} placeholder="Brand SR / approver" /></div>}
+            {picker({ ...LIST_FIELDS[4], required: true })}
+            {picker({ ...LIST_FIELDS[5], required: true })}
+            <div className="field"><label htmlFor="f_planned_delivery">Planned Delivery Date <span className="req">*</span></label><input className="input" id="f_planned_delivery" type="date" value={form.planned_delivery_date} onChange={(e) => set("planned_delivery_date", e.target.value)} /></div>
+            {october && <div className="field"><label htmlFor="f_brand_sr">Brand SR <span className="req">*</span></label><input className="input" id="f_brand_sr" value={form.brand_sr} onChange={(e) => set("brand_sr", e.target.value)} placeholder="Brand SR / approver" /></div>}
             <div className="field">
-              <label htmlFor="f_delivery">Actual Delivery Date</label>
+              <label htmlFor="f_delivery">Actual Delivery Date <span className="req">*</span></label>
               <input className="input" id="f_delivery" type="date" value={form.delivery_date} onChange={(e) => set("delivery_date", e.target.value)} />
             </div>
             <div className="field">
-              <label htmlFor="f_golive">Go live date</label>
+              <label htmlFor="f_golive">Go live date <span className="req">*</span></label>
               <input className="input" id="f_golive" type="date" value={form.go_live_date} onChange={(e) => set("go_live_date", e.target.value)} />
             </div>
           </div>

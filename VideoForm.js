@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { STAGES, DURATIONS, LIST_FIELDS } from "./config";
 import { monthLabel, thisMonth, pctText, fmtWhen } from "./logic";
-import { Badge } from "./ui";
+import { Badge } from "./ui";\nimport { supabase } from "./supabase";
 
 const NAME_KEY = "tracker_your_name"; // convenience only: pre-fills "Your name"
 
@@ -55,7 +55,7 @@ function monthOptions(videos, extra) {
   return [...set].sort();
 }
 
-export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOpenHandled, stages = STAGES, october = false, identity = "", onMonthChange }) {
+export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOpenHandled, stages = STAGES, october = false, identity = "", isAdmin = false, onMonthChange }) {
   const [mode, setMode] = useState("new"); // new | pick | edit | saved
   const [editingId, setEditingId] = useState(null);
   const [query, setQuery] = useState("");
@@ -66,7 +66,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
   const [comment, setComment] = useState("");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
-  const [saved, setSaved] = useState(null);
+  const [saved, setSaved] = useState(null);\n  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => { try { setName(identity || localStorage.getItem(NAME_KEY) || ""); } catch {} }, [identity]);
 
@@ -98,7 +98,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
     return { st: L.overall(v), pct: L.completion(v) };
   }, [form, L]);
 
-  async function onSubmit(e) {
+  async function deleteVideo() {\n    if (!isAdmin || !editingId || deleting) return;\n    const v = videos.find((x) => x.id === editingId);\n    if (!v) return;\n    if (!window.confirm(`Delete #${v.sno} — ${v.feature}? This cannot be undone.`)) return;\n    setErr(""); setDeleting(true);\n    try {\n      const { data, error } = await supabase.rpc("delete_video", { p_id: editingId });\n      if (error) throw new Error(error.message);\n      if (!data) throw new Error("The video could not be deleted.");\n      setMode("pick"); setEditingId(null); setQuery("");\n    } catch (ex) { setErr(ex.message || "Could not delete the video."); }\n    finally { setDeleting(false); }\n  }\n\n  async function onSubmit(e) {
     e.preventDefault();
     setErr("");
     if (!form.feature.trim()) { setErr("Add the feature (film name) so the team can recognise this video."); return; }
@@ -326,7 +326,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
         <div className="savebar">
           <div className="savebar-in">
             <span className="status-preview"><Badge status={preview.st} /> <b className="num">{pctText(preview.pct)}</b></span>
-            <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? "Saving…" : mode === "new" ? "Save video" : "Save update"}</button>
+            <button className="btn btn-primary" type="submit" disabled={saving || deleting}>{saving ? "Saving…" : mode === "new" ? "Save video" : "Save update"}</button>\n            {mode === "edit" && isAdmin && <button className="btn btn-danger" type="button" onClick={deleteVideo} disabled={saving || deleting}>{deleting ? "Deleting…" : "Delete video"}</button>}
           </div>
         </div>
       </form>

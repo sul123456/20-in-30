@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { STAGES, LIST_FIELDS, STALE_DAYS } from "./config";
+import { STAGES, LIST_FIELDS, STALE_DAYS, MAKER_LEADER_MAPPING } from "./config";
 import { monthLabel, fmtDate, fmtWhen, fmtCost, durText, pctText, wText, todayISO, thisMonth } from "./logic";
 import { Badge, PBar, Modal, stageClass } from "./ui";
 import * as XLSX from "xlsx";
@@ -169,6 +169,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
 
       <div className="grid-2">
         <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} />
+        <LeaderGroupPanel rows={rows} L={L} />
         <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} />
         <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
       </div>
@@ -383,3 +384,18 @@ function ApproverPanel({ rows, L }) {
       </tbody></table> : <div className="empty-state">No brand approvers assigned.</div>}
   </section>;
 }
+function LeaderGroupPanel({ rows, L }) {
+  const groups = {};
+  rows.forEach((v) => { const leader = MAKER_LEADER_MAPPING[v.maker] || "Not mapped"; (groups[leader] = groups[leader] || []).push(v); });
+  const list = Object.entries(groups).map(([k, vs]) => ({
+    k, n: vs.length, done: vs.filter((v) => L.overall(v) === "Completed").length,
+    avg: vs.reduce((t, v) => t + L.completion(v), 0) / vs.length,
+  })).sort((a, b) => b.n - a.n || a.k.localeCompare(b.k));
+  return <section className="panel">
+    <div className="panel-head"><h3>Leader-wise completion</h3></div>
+    {list.length ? <table className="grp-tbl"><thead><tr><th>Leader</th><th className="n">Videos</th><th className="n">Done</th><th>Avg. completion</th></tr></thead>
+      <tbody>{list.map((r) => <tr key={r.k}><td><b className={r.k === "Not mapped" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>)}</tbody></table>
+      : <div className="empty-state">No videos to show.</div>}
+  </section>;
+}
+

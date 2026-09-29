@@ -65,3 +65,13 @@ export const OCTOBER_STAGES = [
   { col: "stage_all_edits", label: "All edits delivered", short: "All edits delivered", group: "Production", weight: 15 },
   { col: "stage_go_live", label: "Go Live", short: "Go Live", group: "Production", weight: 5 },
 ];
+
+// Fixed maker → leader ownership mapping approved for the Leader-wise dashboard.
+// Keep this mapping read-only in the application; source of truth is Supabase.
+export const MAKER_LEADER_MAPPING = {
+  Akshat: "Priyansh", Anindita: "Sulbha", Anuja: "Shishir", Aradhita: "Manan",
+  Devaprabha: "Manan", Kajal: "Shishir", Kruthi: "Manan", Lipika: "Pratik",
+  Manan: "Manan", Mayank: "Manan", Medhavi: "Priyansh", Pratik: "Pratik",
+  Priya: "Shishir", Rhea: "Priyansh", Rohan: "Sulbha", Roushan: "Sulbha",
+  Soumyajit: "Pratik", Sumit: "Sulbha", Varun: "Pratik",
+};

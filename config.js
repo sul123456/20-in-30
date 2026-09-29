@@ -69,7 +69,7 @@ export const OCTOBER_STAGES = [
 // Fixed maker → leader ownership mapping approved for the Leader-wise dashboard.
 // Keep this mapping read-only in the application; source of truth is Supabase.
 export const MAKER_LEADER_MAPPING = {
-  Akshat: "Priyansh", Anindita: "Sulbha", Anuja: "Shishir", Aradhita: "Manan",
+  Akshat: "Priyansh", Anindita: "Sulbha", Anuja: "Shishir", Aradhita: "Pratik",
   Devaprabha: "Manan", Kajal: "Shishir", Kruthi: "Manan", Lipika: "Pratik",
   Manan: "Manan", Mayank: "Manan", Medhavi: "Priyansh", Pratik: "Pratik",
   Priya: "Shishir", Rhea: "Priyansh", Rohan: "Sulbha", Roushan: "Sulbha",

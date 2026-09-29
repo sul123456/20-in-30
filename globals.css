@@ -331,3 +331,11 @@ td.n, th.n { text-align: right; width: 1%; }
 .audit-update { background:var(--progress-bg); color:var(--progress); }
 .audit-delete { background:var(--overdue-bg); color:var(--overdue); }
 @media (max-width: 760px) { .audit-summary { justify-content:flex-start; } .audit-filters { grid-template-columns:1fr; } }
+
+/* Clickable dashboard drill-downs */
+.kpi.k-clickable { width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+.kpi.k-clickable:hover, .kpi.k-clickable:focus-visible { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.08); outline: none; }
+.clickable-row { cursor: pointer; }
+.clickable-row:hover td, .clickable-row:focus td { background: var(--surface-2); }
+.clickable-row:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+.drillbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-2); }

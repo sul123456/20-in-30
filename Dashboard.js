@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { STAGES, LIST_FIELDS, STALE_DAYS, MAKER_LEADER_MAPPING } from "./config";
 import { monthLabel, fmtDate, fmtWhen, fmtCost, durText, pctText, wText, todayISO, thisMonth } from "./logic";
 import { Badge, PBar, Modal, stageClass } from "./ui";
@@ -14,6 +14,8 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ field: "completion", dir: "desc" });
   const [openId, setOpenId] = useState(null);
+  const [drill, setDrill] = useState(null);
+  const allVideosRef = useRef(null);
 
   const rows = useMemo(() => videos.filter((v) => {
     const f = filters;
@@ -23,8 +25,15 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     if (f.status && L.overall(v) !== f.status) return false;
     if (f.liveFrom && !(v.go_live_date && v.go_live_date >= f.liveFrom)) return false;
     if (f.liveTo && !(v.go_live_date && v.go_live_date <= f.liveTo)) return false;
+    if (drill) {
+      if (drill.kind === "status" && L.overall(v) !== drill.value) return false;
+      if (drill.kind === "wentLive" && !L.isDone(v.stage_go_live)) return false;
+      if (drill.kind === "leader" && (MAKER_LEADER_MAPPING[v.maker] || "Not mapped") !== drill.value) return false;
+      if (drill.kind === "group" && (v[drill.col] || "Not set") !== drill.value) return false;
+      if (drill.kind === "approver" && (v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") !== drill.value) return false;
+    }
     return true;
-  }), [videos, filters, L]);
+  }), [videos, filters, L, drill]);
 
   // ---------- numbers (all calculated from the live Supabase rows) ----------
   const counts = { Completed: 0, "In Progress": 0, Pending: 0, Overdue: 0 };
@@ -33,6 +42,16 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
   const wentLive = completedVideos.filter((v) => L.isDone(v.stage_go_live)).length;
   const completedPct = rows.length ? (counts.Completed / rows.length) * 100 : 0;
   const activeFilters = Object.values(filters).filter(Boolean).length;
+  const drillLabel = drill ? (
+    drill.kind === "status" ? drill.value :
+    drill.kind === "wentLive" ? "Went live" :
+    drill.kind === "leader" ? `Leader: ${drill.value}` :
+    drill.kind === "group" ? `${drill.label}: ${drill.value}` :
+    drill.kind === "approver" ? `Brand approver: ${drill.value}` : ""
+  ) : "";
+  const scrollToVideos = () => setTimeout(() => allVideosRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+  const applyDrill = (next) => { setDrill(next); scrollToVideos(); };
+  const clearDrill = () => { setDrill(null); scrollToVideos(); };
   const statusNames = statuses.map((s) => s.name);
   const colorOf = (name) => ({ pending: "var(--pending)", done: "var(--done)" }[L.catOf(name)] || (name === "In Progress" ? "var(--progress)" : "var(--other)"));
 
@@ -135,13 +154,13 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
       </section>
 
       <section className="kpis">
-        <div className="kpi"><div className="v num">{rows.length}</div><div className="l">Total videos</div></div>
-        <div className="kpi k-done"><div className="v num">{counts.Completed}</div><div className="l">Completed</div></div>
-        <div className="kpi k-prog"><div className="v num">{counts["In Progress"]}</div><div className="l">In progress</div></div>
-        <div className="kpi k-pend"><div className="v num">{counts.Pending}</div><div className="l">Not started</div></div>
-        <div className="kpi k-over"><div className="v num">{counts.Overdue}</div><div className="l">Overdue</div></div>
-        <div className="kpi k-live"><div className="v num">{wentLive}</div><div className="l">Went live</div></div>
-        <div className="kpi k-pct"><div className="v num">{pctText(completedPct)}</div><div className="l">Completion</div></div>
+        <button type="button" className="kpi k-clickable" onClick={() => applyDrill(null)} title="Show all videos"><div className="v num">{rows.length}</div><div className="l">Total videos</div></button>
+        <button type="button" className="kpi k-done k-clickable" onClick={() => applyDrill({ kind: "status", value: "Completed" })} title="Show completed videos"><div className="v num">{counts.Completed}</div><div className="l">Completed</div></button>
+        <button type="button" className="kpi k-prog k-clickable" onClick={() => applyDrill({ kind: "status", value: "In Progress" })} title="Show videos in progress"><div className="v num">{counts["In Progress"]}</div><div className="l">In progress</div></button>
+        <button type="button" className="kpi k-pend k-clickable" onClick={() => applyDrill({ kind: "status", value: "Pending" })} title="Show videos not started"><div className="v num">{counts.Pending}</div><div className="l">Not started</div></button>
+        <button type="button" className="kpi k-over k-clickable" onClick={() => applyDrill({ kind: "status", value: "Overdue" })} title="Show overdue videos"><div className="v num">{counts.Overdue}</div><div className="l">Overdue</div></button>
+        <button type="button" className="kpi k-live k-clickable" onClick={() => applyDrill({ kind: "wentLive" })} title="Show videos that went live"><div className="v num">{wentLive}</div><div className="l">Went live</div></button>
+        <button type="button" className="kpi k-pct k-clickable" onClick={() => applyDrill(null)} title="Show all videos"><div className="v num">{pctText(completedPct)}</div><div className="l">Completion</div></button>
       </section>
 
       {/* ---------- filters ---------- */}
@@ -165,17 +184,21 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
         </div>
       </section>
 
-      {approverDashboard && <ApproverPanel rows={rows} L={L} />}
+      {drillLabel && (
+        <div className="drillbar"><span>Showing: <b>{drillLabel}</b></span><button className="btn btn-sm" onClick={clearDrill}>Clear drill-down</button></div>
+      )}
+
+      {approverDashboard && <ApproverPanel rows={rows} L={L} onDrill={applyDrill} />}
 
       <div className="grid-2">
-        <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} />
-        <LeaderGroupPanel rows={rows} L={L} />
-        <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} />
-        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} />
+        <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} onDrill={applyDrill} />
+        <LeaderGroupPanel rows={rows} L={L} onDrill={applyDrill} />
+        <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} onDrill={applyDrill} />
+        <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} onDrill={applyDrill} />
       </div>
 
       {/* ---------- all videos ---------- */}
-      <section className="panel">
+      <section className="panel" ref={allVideosRef}>
         <div className="panel-head">
           <h3>All videos <span className="muted num">({list.length})</span></h3>
           <button className="btn btn-sm excel-btn" type="button" onClick={downloadExcel} disabled={!list.length}>Download Excel</button>
@@ -266,7 +289,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
   );
 }
 
-function GroupPanel({ title, col, rows, L }) {
+function GroupPanel({ title, col, rows, L, onDrill }) {
   const groups = {};
   rows.forEach((v) => { const k = v[col] || "Not set"; (groups[k] = groups[k] || []).push(v); });
   const list = Object.entries(groups).map(([k, vs]) => ({
@@ -280,7 +303,7 @@ function GroupPanel({ title, col, rows, L }) {
         <table className="grp-tbl">
           <thead><tr><th>{title.replace("-wise completion", "")}</th><th className="n">Videos</th><th className="n">Done</th><th>Avg. completion</th></tr></thead>
           <tbody>{list.map((r) => (
-            <tr key={r.k}><td><b className={r.k === "Not set" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>
+            <tr key={r.k} className="clickable-row" tabIndex={0} onClick={() => onDrill({ kind: "group", col, value: r.k, label: title.replace("-wise completion", "") })} onKeyDown={(e) => e.key === "Enter" && onDrill({ kind: "group", col, value: r.k, label: title.replace("-wise completion", "") })}><td><b className={r.k === "Not set" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>
           ))}</tbody>
         </table>
       ) : <div className="empty-state">No videos to show.</div>}
@@ -366,7 +389,7 @@ const OCTOBER_APPROVERS = {
   "360 Business Banking - AI": "Kruthi",
 };
 
-function ApproverPanel({ rows, L }) {
+function ApproverPanel({ rows, L, onDrill }) {
   const names = [...new Set(rows.map((v) => v.brand_approver || OCTOBER_APPROVERS[v.feature]).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const list = names.map((name) => ({
     name,
@@ -379,12 +402,12 @@ function ApproverPanel({ rows, L }) {
   return <section className="panel">
     <div className="panel-head"><h3>Brand approval dashboard <span className="muted num">({totalAssigned} videos assigned)</span></h3></div>
     {list.length ? <table className="grp-tbl approver-tbl"><thead><tr><th>Brand Approver</th><th className="n">Videos assigned for approval</th><th className="n">First cut done</th><th className="n">Pending approval</th></tr></thead>
-      <tbody>{list.map(r => <tr key={r.name}><td><b>{r.name}</b></td><td className="n num">{r.assigned}</td><td className="n num">{r.firstCutDone}</td><td className="n num">{r.pending}</td></tr>)}
+      <tbody>{list.map(r => <tr key={r.name} className="clickable-row" tabIndex={0} onClick={() => onDrill({ kind: "approver", value: r.name })} onKeyDown={(e) => e.key === "Enter" && onDrill({ kind: "approver", value: r.name })}><td><b>{r.name}</b></td><td className="n num">{r.assigned}</td><td className="n num">{r.firstCutDone}</td><td className="n num">{r.pending}</td></tr>)}
       <tr><td><b>Total</b></td><td className="n num"><b>{totalAssigned}</b></td><td className="n num"><b>{list.reduce((t, r) => t + r.firstCutDone, 0)}</b></td><td className="n num"><b>{totalPending}</b></td></tr>
       </tbody></table> : <div className="empty-state">No brand approvers assigned.</div>}
   </section>;
 }
-function LeaderGroupPanel({ rows, L }) {
+function LeaderGroupPanel({ rows, L, onDrill }) {
   const groups = {};
   rows.forEach((v) => { const leader = MAKER_LEADER_MAPPING[v.maker] || "Not mapped"; (groups[leader] = groups[leader] || []).push(v); });
   const list = Object.entries(groups).map(([k, vs]) => ({
@@ -394,7 +417,7 @@ function LeaderGroupPanel({ rows, L }) {
   return <section className="panel">
     <div className="panel-head"><h3>Leader-wise completion</h3></div>
     {list.length ? <table className="grp-tbl"><thead><tr><th>Leader</th><th className="n">Videos</th><th className="n">Done</th><th>Avg. completion</th></tr></thead>
-      <tbody>{list.map((r) => <tr key={r.k}><td><b className={r.k === "Not mapped" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>)}</tbody></table>
+      <tbody>{list.map((r) => <tr key={r.k} className="clickable-row" tabIndex={0} onClick={() => onDrill({ kind: "leader", value: r.k })} onKeyDown={(e) => e.key === "Enter" && onDrill({ kind: "leader", value: r.k })}><td><b className={r.k === "Not mapped" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>)}</tbody></table>
       : <div className="empty-state">No videos to show.</div>}
   </section>;
 }

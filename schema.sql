@@ -37,6 +37,7 @@ create table if not exists public.videos (
   cost_note            text,              -- e.g. 'TBC' when no amount yet
   digital_fpr          text,
   brand_checker        text,
+  start_date           date,
   delivery_date        date,
   go_live_date         date,
   remarks              text,

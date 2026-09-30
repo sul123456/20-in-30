@@ -124,6 +124,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
       const missing = [];
       const requiredFields = [
         ["video_name", "Video Name"],
+        ["start_date", "Start Date"],
         ["feature", "Feature"],
         ["month", "Month"],
         ["product", "Product"],
@@ -146,6 +147,10 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
         setErr(`Please complete: ${missing.join(", ")}.`);
         return;
       }
+    }
+    if (!String(form.start_date ?? "").trim()) {
+      setErr("Please enter the Start Date.");
+      return;
     }
     if (!name.trim()) { setErr("Your signed-in Google identity could not be determined. Please sign out and sign in again."); return; }
     const { _stamp, ...orig } = original;
@@ -339,7 +344,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
             </div>
             {picker({ ...LIST_FIELDS[4], required: true })}
             {picker({ ...LIST_FIELDS[5], required: true })}
-            <div className="field"><label htmlFor="f_start_date">Start Date</label><input className="input" id="f_start_date" type="date" value={form.start_date} onChange={(e) => set("start_date", e.target.value)} /></div>
+            <div className="field"><label htmlFor="f_start_date">Start Date <span className="req">*</span></label><input className="input" id="f_start_date" type="date" value={form.start_date} onChange={(e) => set("start_date", e.target.value)} /></div>
             <div className="field"><label htmlFor="f_planned_delivery">Planned Delivery Date <span className="req">*</span></label><input className="input" id="f_planned_delivery" type="date" value={form.planned_delivery_date} onChange={(e) => set("planned_delivery_date", e.target.value)} /></div>
             {october && <div className="field"><label htmlFor="f_brand_sr">Brand SR <span className="req">*</span></label><input className="input" id="f_brand_sr" value={form.brand_sr} onChange={(e) => set("brand_sr", e.target.value)} placeholder="Brand SR / approver" /></div>}
             <div className="field">

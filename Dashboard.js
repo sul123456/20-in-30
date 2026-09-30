@@ -67,11 +67,30 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     drill.kind === "group" ? `${drill.label}: ${drill.value}` :
     drill.kind === "approver" ? `Brand approver: ${drill.value}` : ""
   ) : "";
+  const scrollToFirstDrillVideo = () => setTimeout(() => {
+    const root = allVideosRef.current;
+    if (!root) return;
+    const desktopFirst = root.querySelector(".proj-tbl tbody tr");
+    const mobileFirst = root.querySelector(".cards li");
+    const first = desktopFirst && desktopFirst.offsetParent !== null ? desktopFirst : mobileFirst;
+    if (!first) return;
+
+    first.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(() => {
+      const bar = document.querySelector(".drillbar");
+      if (!bar) return;
+      const rect = first.getBoundingClientRect();
+      const barBottom = bar.getBoundingClientRect().bottom;
+      const gap = 12;
+      const delta = rect.top - barBottom - gap;
+      if (Math.abs(delta) > 2) window.scrollBy({ top: delta, behavior: "smooth" });
+    }, 350);
+  }, 0);
   const scrollToVideos = () => setTimeout(() => allVideosRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
   const applyDrill = (next) => {
     if (next && !drill) drillOriginYRef.current = window.scrollY;
     setDrill(next);
-    if (next) scrollToVideos();
+    if (next) scrollToFirstDrillVideo();
   };
   const clearDrill = () => {
     const returnY = drillOriginYRef.current;

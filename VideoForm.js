@@ -15,7 +15,7 @@ function toForm(v, stages = STAGES) {
     product: v?.product || "", usage: v?.usage || "", maker: v?.maker || "", agency: v?.agency || "",
     digital_fpr: v?.digital_fpr || "", brand_checker: v?.brand_checker || "",
     cost: v?.cost !== null && v?.cost !== undefined ? String(Number(v.cost)) : v?.cost_note || "",
-    delivery_date: v?.delivery_date || "", go_live_date: v?.go_live_date || "",
+    start_date: v?.start_date || "", delivery_date: v?.delivery_date || "", go_live_date: v?.go_live_date || "",
     remarks: v?.remarks || "",
     durations: (v?.durations || []).slice().sort((a, b) => a - b),
     planned_delivery_date: v?.planned_delivery_date || "",
@@ -339,6 +339,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
             </div>
             {picker({ ...LIST_FIELDS[4], required: true })}
             {picker({ ...LIST_FIELDS[5], required: true })}
+            <div className="field"><label htmlFor="f_start_date">Start Date</label><input className="input" id="f_start_date" type="date" value={form.start_date} onChange={(e) => set("start_date", e.target.value)} /></div>
             <div className="field"><label htmlFor="f_planned_delivery">Planned Delivery Date <span className="req">*</span></label><input className="input" id="f_planned_delivery" type="date" value={form.planned_delivery_date} onChange={(e) => set("planned_delivery_date", e.target.value)} /></div>
             {october && <div className="field"><label htmlFor="f_brand_sr">Brand SR <span className="req">*</span></label><input className="input" id="f_brand_sr" value={form.brand_sr} onChange={(e) => set("brand_sr", e.target.value)} placeholder="Brand SR / approver" /></div>}
             <div className="field">

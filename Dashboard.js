@@ -16,6 +16,24 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
   const [openId, setOpenId] = useState(null);
   const [drill, setDrill] = useState(null);
   const allVideosRef = useRef(null);
+  const drillOriginYRef = useRef(null);
+
+  useEffect(() => {
+    const topbar = document.querySelector(".topbar");
+    if (!topbar) return;
+    const updateDrillTop = () => {
+      const h = Math.ceil(topbar.getBoundingClientRect().height);
+      document.documentElement.style.setProperty("--drill-top", (h + 8) + "px");
+    };
+    updateDrillTop();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(updateDrillTop) : null;
+    ro?.observe(topbar);
+    window.addEventListener("resize", updateDrillTop);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", updateDrillTop);
+    };
+  }, []);
 
   const rows = useMemo(() => videos.filter((v) => {
     const f = filters;
@@ -50,8 +68,17 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     drill.kind === "approver" ? `Brand approver: ${drill.value}` : ""
   ) : "";
   const scrollToVideos = () => setTimeout(() => allVideosRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
-  const applyDrill = (next) => { setDrill(next); scrollToVideos(); };
-  const clearDrill = () => { setDrill(null); scrollToVideos(); };
+  const applyDrill = (next) => {
+    if (next && !drill) drillOriginYRef.current = window.scrollY;
+    setDrill(next);
+    if (next) scrollToVideos();
+  };
+  const clearDrill = () => {
+    const returnY = drillOriginYRef.current;
+    drillOriginYRef.current = null;
+    setDrill(null);
+    setTimeout(() => window.scrollTo({ top: returnY ?? 0, behavior: "smooth" }), 0);
+  };
   const statusNames = statuses.map((s) => s.name);
   const colorOf = (name) => ({ pending: "var(--pending)", done: "var(--done)" }[L.catOf(name)] || (name === "In Progress" ? "var(--progress)" : "var(--other)"));
 

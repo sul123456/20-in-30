@@ -185,7 +185,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
       </section>
 
       {drillLabel && (
-        <div className="drillbar"><span>Showing: <b>{drillLabel}</b></span><button className="btn btn-sm" onClick={clearDrill}>Clear drill-down</button></div>
+        <div className="drillbar"><span>Showing: <b>{drillLabel}</b></span><button className="btn btn-sm" onClick={clearDrill}>Back to Main Dashboard</button></div>
       )}
 
       {approverDashboard && <ApproverPanel rows={rows} L={L} onDrill={applyDrill} />}

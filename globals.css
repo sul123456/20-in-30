@@ -341,7 +341,11 @@ td.n, th.n { text-align: right; width: 1%; }
 .drillbar { position: sticky; top: 8px; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 14px 0 0; padding: 10px 12px 10px 14px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent-soft); color: var(--ink); box-shadow: 0 4px 14px rgba(0,0,0,.12); }
 @media (max-width: 859px) {
   /* Keep the active drill-down visible while scrolling on phones. */
-  .drillbar { position: fixed; left: 10px; right: 10px; top: 46vh; z-index: 40; margin: 0; }
+  .drillbar { position: fixed; left: 10px; right: 10px; top: 270px; z-index: 40; margin: 0; }
+}
+@media (max-width: 380px) {
+  .drillbar { top: 240px; }
+}
   .drillbar + .panel, .drillbar + .grid-2 { scroll-margin-top: 16px; }
 }
 .drillbar > span { font-weight: 600; }

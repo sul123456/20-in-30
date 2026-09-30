@@ -176,8 +176,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     <div className="dash">
       {/* ---------- headline ---------- */}
       <section className="hero">
-        <div>
-          <p className="hero-kicker">{title}</p><p className="hero-head num">{pctText(completedPct)} <span>complete</span></p>
+        <div>          <p className="hero-kicker">{title}</p><p className="hero-head num">{pctText(completedPct)} <span>complete</span></p>
           <p className="hero-sub"><b>{counts.Completed} of {rows.length}</b> completed{activeFilters ? " (filtered)" : ""} · <b>{wentLive} of {completedVideos.length}</b> went live.</p>
         </div>
         <div>
@@ -241,6 +240,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
         <LeaderGroupPanel rows={rows} L={L} onDrill={applyDrill} />
         <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} onDrill={applyDrill} />
         <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} onDrill={applyDrill} />
+        <GroupPanel title="Brand Checker-wise completion" col="brand_checker" rows={rows} L={L} onDrill={applyDrill} />
       </div>
 
       {/* ---------- all videos ---------- */}
@@ -417,8 +417,7 @@ const OCTOBER_APPROVERS = {
   "SmartLock on iMobile, End slate super: No minimum balance - AI": "Varun",
   "Retirement solution, Invest in NPS on iMobile, End slate super: No minimum balance - AI": "Varun",
   "AL - Loan up to 100% of on-road price PL - Loan up to Rs. 50 L - AI": "Sulbha",
-  "AL - Apply online and get quick disbursal, 3,500+ dealers PL - Apply online and get quick disbursement - AI": "Sulbha",
-  "Loan up to Rs. 50 L, Tenure up to 74 months, Home Renovation - AI": "Sulbha",
+  "AL - Apply online and get quick disbursal, 3,500+ dealers PL - Apply online and get quick disbursement - AI": "Sulbha",  "Loan up to Rs. 50 L, Tenure up to 74 months, Home Renovation - AI": "Sulbha",
   "Loan up to Rs. 50 L, Tenure up to 74 months, Dream Vacation": "Sulbha",
   "Loan up to Rs. 50 L, Tenure up to 74 months, Big-ticket Gadgets": "Sulbha",
   "HL NCA - Online sanction, minimal documentation, Festive Led - AI": "Sulbha",
@@ -467,4 +466,3 @@ function LeaderGroupPanel({ rows, L, onDrill }) {
       : <div className="empty-state">No videos to show.</div>}
   </section>;
 }
-

@@ -48,6 +48,11 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
       if (drill.kind === "wentLive" && !L.isDone(v.stage_go_live)) return false;
       if (drill.kind === "leader" && (MAKER_LEADER_MAPPING[v.maker] || "Not mapped") !== drill.value) return false;
       if (drill.kind === "group" && (v[drill.col] || "Not set") !== drill.value) return false;
+      if (drill.kind === "costRange") {
+        const n = Number(v.cost);
+        const k = !Number.isFinite(n) ? "Not set" : n <= 50000 ? "≤ ₹50,000" : n <= 100000 ? "₹50,001–₹1,00,000" : n <= 200000 ? "₹1,00,001–₹2,00,000" : "> ₹2,00,000";
+        if (k !== drill.value) return false;
+      }
       if (drill.kind === "approver" && (v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") !== drill.value) return false;
     }
     return true;
@@ -65,6 +70,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     drill.kind === "wentLive" ? "Went live" :
     drill.kind === "leader" ? `Leader: ${drill.value}` :
     drill.kind === "group" ? `${drill.label}: ${drill.value}` :
+    drill.kind === "costRange" ? `Cost range: ${drill.value}` :
     drill.kind === "approver" ? `Brand approver: ${drill.value}` : ""
   ) : "";
   const scrollToFirstDrillVideo = () => setTimeout(() => {
@@ -240,6 +246,10 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
         <LeaderGroupPanel rows={rows} L={L} onDrill={applyDrill} />
         <GroupPanel title="Agency-wise completion" col="agency" rows={rows} L={L} onDrill={applyDrill} />
         <GroupPanel title="Product-wise completion" col="product" rows={rows} L={L} onDrill={applyDrill} />
+        <GroupPanel title="Usage-wise completion" col="usage" rows={rows} L={L} onDrill={applyDrill} />
+        <GroupPanel title="Type-wise completion" col="video_type" rows={rows} L={L} onDrill={applyDrill} />
+        <CostRangePanel rows={rows} L={L} onDrill={applyDrill} />
+        <GroupPanel title="Digital Marketing Leader-wise completion" col="digital_marketing_leader" rows={rows} L={L} onDrill={applyDrill} />
         <GroupPanel title="Brand Checker-wise completion" col="brand_checker" rows={rows} L={L} onDrill={applyDrill} />
       </div>
 
@@ -342,19 +352,46 @@ function GroupPanel({ title, col, rows, L, onDrill }) {
     k, n: vs.length, done: vs.filter((v) => L.overall(v) === "Completed").length,
     avg: vs.reduce((t, v) => t + L.completion(v), 0) / vs.length,
   })).sort((a, b) => b.n - a.n || a.k.localeCompare(b.k));
+  const total = { n: rows.length, done: rows.filter((v) => L.overall(v) === "Completed").length, avg: rows.length ? rows.reduce((t, v) => t + L.completion(v), 0) / rows.length : 0 };
+  const label = title.replace("-wise completion", "");
   return (
     <section className="panel">
       <div className="panel-head"><h3>{title}</h3></div>
       {list.length ? (
         <table className="grp-tbl">
-          <thead><tr><th>{title.replace("-wise completion", "")}</th><th className="n">Videos</th><th className="n">Done</th><th>Avg. completion</th></tr></thead>
+          <thead><tr><th>{label}</th><th className="n">Videos</th><th className="n">Done</th><th>Avg. completion</th></tr></thead>
           <tbody>{list.map((r) => (
-            <tr key={r.k} className="clickable-row" tabIndex={0} onClick={() => onDrill({ kind: "group", col, value: r.k, label: title.replace("-wise completion", "") })} onKeyDown={(e) => e.key === "Enter" && onDrill({ kind: "group", col, value: r.k, label: title.replace("-wise completion", "") })}><td><b className={r.k === "Not set" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>
-          ))}</tbody>
+            <tr key={r.k} className="clickable-row" tabIndex={0} onClick={() => onDrill({ kind: "group", col, value: r.k, label })} onKeyDown={(e) => e.key === "Enter" && onDrill({ kind: "group", col, value: r.k, label })}><td><b className={r.k === "Not set" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>
+          ))}<tr className="total-row"><td><b>Total</b></td><td className="n num"><b>{total.n}</b></td><td className="n num"><b>{total.done}</b></td><td><PBar value={total.avg} /></td></tr></tbody>
         </table>
       ) : <div className="empty-state">No videos to show.</div>}
     </section>
   );
+}
+
+function CostRangePanel({ rows, L, onDrill }) {
+  const bucket = (v) => {
+    const n = Number(v.cost);
+    if (!Number.isFinite(n)) return "Not set";
+    if (n <= 50000) return "≤ ₹50,000";
+    if (n <= 100000) return "₹50,001–₹1,00,000";
+    if (n <= 200000) return "₹1,00,001–₹2,00,000";
+    return "> ₹2,00,000";
+  };
+  const groups = {};
+  rows.forEach((v) => { const k = bucket(v); (groups[k] = groups[k] || []).push(v); });
+  const order = ["≤ ₹50,000","₹50,001–₹1,00,000","₹1,00,001–₹2,00,000","> ₹2,00,000","Not set"];
+  const list = order.filter(k => groups[k]).map(k => {
+    const vs=groups[k];
+    return { k, n:vs.length, done:vs.filter(v=>L.overall(v)==="Completed").length, avg:vs.reduce((t,v)=>t+L.completion(v),0)/vs.length };
+  });
+  const total = { n: rows.length, done: rows.filter(v=>L.overall(v)==="Completed").length, avg: rows.length ? rows.reduce((t,v)=>t+L.completion(v),0)/rows.length : 0 };
+  return <section className="panel">
+    <div className="panel-head"><h3>Cost-range-wise completion</h3></div>
+    {list.length ? <table className="grp-tbl"><thead><tr><th>Cost range</th><th className="n">Videos</th><th className="n">Done</th><th>Avg. completion</th></tr></thead>
+      <tbody>{list.map(r=><tr key={r.k} className="clickable-row" tabIndex={0} onClick={()=>onDrill({kind:"costRange",value:r.k})} onKeyDown={e=>e.key==="Enter"&&onDrill({kind:"costRange",value:r.k})}><td><b className={r.k==="Not set"?"muted":""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg}/></td></tr>)}<tr className="total-row"><td><b>Total</b></td><td className="n num"><b>{total.n}</b></td><td className="n num"><b>{total.done}</b></td><td><PBar value={total.avg}/></td></tr></tbody>
+    </table> : <div className="empty-state">No videos to show.</div>}
+  </section>;
 }
 
 function Detail({ v, L, stages = STAGES, onClose, onEdit, loadHistory }) {
@@ -448,7 +485,7 @@ function ApproverPanel({ rows, L, onDrill }) {
     <div className="panel-head"><h3>Brand approval dashboard <span className="muted num">({totalAssigned} videos assigned)</span></h3></div>
     {list.length ? <table className="grp-tbl approver-tbl"><thead><tr><th>Brand Approver</th><th className="n">Videos assigned for approval</th><th className="n">First cut done</th><th className="n">Pending approval</th></tr></thead>
       <tbody>{list.map(r => <tr key={r.name} className="clickable-row" tabIndex={0} onClick={() => onDrill({ kind: "approver", value: r.name })} onKeyDown={(e) => e.key === "Enter" && onDrill({ kind: "approver", value: r.name })}><td><b>{r.name}</b></td><td className="n num">{r.assigned}</td><td className="n num">{r.firstCutDone}</td><td className="n num">{r.pending}</td></tr>)}
-      <tr><td><b>Total</b></td><td className="n num"><b>{totalAssigned}</b></td><td className="n num"><b>{list.reduce((t, r) => t + r.firstCutDone, 0)}</b></td><td className="n num"><b>{totalPending}</b></td></tr>
+      <tr className="total-row"><td><b>Total</b></td><td className="n num"><b>{totalAssigned}</b></td><td className="n num"><b>{list.reduce((t, r) => t + r.firstCutDone, 0)}</b></td><td className="n num"><b>{totalPending}</b></td></tr>
       </tbody></table> : <div className="empty-state">No brand approvers assigned.</div>}
   </section>;
 }
@@ -459,10 +496,11 @@ function LeaderGroupPanel({ rows, L, onDrill }) {
     k, n: vs.length, done: vs.filter((v) => L.overall(v) === "Completed").length,
     avg: vs.reduce((t, v) => t + L.completion(v), 0) / vs.length,
   })).sort((a, b) => b.n - a.n || a.k.localeCompare(b.k));
+  const total = { n: rows.length, done: rows.filter(v=>L.overall(v)==="Completed").length, avg: rows.length ? rows.reduce((t,v)=>t+L.completion(v),0)/rows.length : 0 };
   return <section className="panel">
     <div className="panel-head"><h3>Leader-wise completion</h3></div>
     {list.length ? <table className="grp-tbl"><thead><tr><th>Leader</th><th className="n">Videos</th><th className="n">Done</th><th>Avg. completion</th></tr></thead>
-      <tbody>{list.map((r) => <tr key={r.k} className="clickable-row" tabIndex={0} onClick={() => onDrill({ kind: "leader", value: r.k })} onKeyDown={(e) => e.key === "Enter" && onDrill({ kind: "leader", value: r.k })}><td><b className={r.k === "Not mapped" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>)}</tbody></table>
+      <tbody>{list.map((r) => <tr key={r.k} className="clickable-row" tabIndex={0} onClick={() => onDrill({ kind: "leader", value: r.k })} onKeyDown={(e) => e.key === "Enter" && onDrill({ kind: "leader", value: r.k })}><td><b className={r.k === "Not mapped" ? "muted" : ""}>{r.k}</b></td><td className="n num">{r.n}</td><td className="n num">{r.done}</td><td><PBar value={r.avg} /></td></tr>)}<tr className="total-row"><td><b>Total</b></td><td className="n num"><b>{total.n}</b></td><td className="n num"><b>{total.done}</b></td><td><PBar value={total.avg}/></td></tr></tbody></table>
       : <div className="empty-state">No videos to show.</div>}
   </section>;
 }

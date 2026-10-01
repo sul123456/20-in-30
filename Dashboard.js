@@ -53,7 +53,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
         const k = !Number.isFinite(n) ? "Not set" : n <= 50000 ? "≤ ₹50,000" : n <= 100000 ? "₹50,001–₹1,00,000" : n <= 200000 ? "₹1,00,001–₹2,00,000" : "> ₹2,00,000";
         if (k !== drill.value) return false;
       }
-      if (drill.kind === "approver" && (v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") !== drill.value) return false;
+      if (drill.kind === "approver" && (v.brand_checker || v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") !== drill.value) return false;
     }
     return true;
   }), [videos, filters, L, drill]);
@@ -472,12 +472,12 @@ const OCTOBER_APPROVERS = {
 };
 
 function ApproverPanel({ rows, L, onDrill }) {
-  const names = [...new Set(rows.map((v) => v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned"))].sort((a, b) => a.localeCompare(b));
+  const names = [...new Set(rows.map((v) => v.brand_checker || v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned"))].sort((a, b) => a.localeCompare(b));
   const list = names.map((name) => ({
     name,
-    assigned: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") === name).length,
-    pending: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") === name && L.isDone(v.stage_first_cut) && L.catOf(v.stage_brand_approval) === "pending").length,
-    firstCutDone: rows.filter((v) => (v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") === name && L.isDone(v.stage_first_cut)).length,
+    assigned: rows.filter((v) => (v.brand_checker || v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") === name).length,
+    pending: rows.filter((v) => (v.brand_checker || v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") === name && L.isDone(v.stage_first_cut) && L.catOf(v.stage_brand_approval) === "pending").length,
+    firstCutDone: rows.filter((v) => (v.brand_checker || v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") === name && L.isDone(v.stage_first_cut)).length,
   }));
   const totalAssigned = list.reduce((t, r) => t + r.assigned, 0);
   const totalPending = list.reduce((t, r) => t + r.pending, 0);

@@ -351,7 +351,7 @@ function GroupPanel({ title, col, rows, L, onDrill }) {
   const list = Object.entries(groups).map(([k, vs]) => ({
     k, n: vs.length, done: vs.filter((v) => L.overall(v) === "Completed").length,
     avg: vs.reduce((t, v) => t + L.completion(v), 0) / vs.length,
-  })).sort((a, b) => b.n - a.n || a.k.localeCompare(b.k));
+  })).sort((a, b) => b.avg - a.avg || b.n - a.n || a.k.localeCompare(b.k));
   const total = { n: rows.length, done: rows.filter((v) => L.overall(v) === "Completed").length, avg: rows.length ? rows.reduce((t, v) => t + L.completion(v), 0) / rows.length : 0 };
   const label = title.replace("-wise completion", "");
   return (
@@ -502,7 +502,7 @@ function LeaderGroupPanel({ rows, L, onDrill }) {
   const list = Object.entries(groups).map(([k, vs]) => ({
     k, n: vs.length, done: vs.filter((v) => L.overall(v) === "Completed").length,
     avg: vs.reduce((t, v) => t + L.completion(v), 0) / vs.length,
-  })).sort((a, b) => b.n - a.n || a.k.localeCompare(b.k));
+  })).sort((a, b) => b.avg - a.avg || b.n - a.n || a.k.localeCompare(b.k));
   const total = { n: rows.length, done: rows.filter(v=>L.overall(v)==="Completed").length, avg: rows.length ? rows.reduce((t,v)=>t+L.completion(v),0)/rows.length : 0 };
   return <section className="panel">
     <div className="panel-head"><h3>Leader-wise completion</h3></div>

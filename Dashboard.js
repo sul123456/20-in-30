@@ -46,7 +46,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     if (drill) {
       if (drill.kind === "status" && L.overall(v) !== drill.value) return false;
       if (drill.kind === "wentLive" && !L.isDone(v.stage_go_live)) return false;
-      if (drill.kind === "leader" && (MAKER_LEADER_MAPPING[v.maker] || "Not mapped") !== drill.value) return false;
+      if (drill.kind === "leader" && leaderForVideo(v) !== drill.value) return false;
       if (drill.kind === "group" && (v[drill.col] || "Not set") !== drill.value) return false;
       if (drill.kind === "costRange") {
         const n = Number(v.cost);
@@ -489,9 +489,16 @@ function ApproverPanel({ rows, L, onDrill }) {
       </tbody></table> : <div className="empty-state">No brand approvers assigned.</div>}
   </section>;
 }
+function leaderForVideo(v) {
+  // October leader ownership comes directly from the latest uploaded October data.
+  // Other months retain the legacy maker-to-leader mapping.
+  if (v.month === "2026-10") return String(v.leader || "").trim() || "Not mapped";
+  return MAKER_LEADER_MAPPING[v.maker] || "Not mapped";
+}
+
 function LeaderGroupPanel({ rows, L, onDrill }) {
   const groups = {};
-  rows.forEach((v) => { const leader = MAKER_LEADER_MAPPING[v.maker] || "Not mapped"; (groups[leader] = groups[leader] || []).push(v); });
+  rows.forEach((v) => { const leader = leaderForVideo(v); (groups[leader] = groups[leader] || []).push(v); });
   const list = Object.entries(groups).map(([k, vs]) => ({
     k, n: vs.length, done: vs.filter((v) => L.overall(v) === "Completed").length,
     avg: vs.reduce((t, v) => t + L.completion(v), 0) / vs.length,

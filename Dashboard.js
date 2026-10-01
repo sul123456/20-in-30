@@ -239,8 +239,6 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
         <div className="drillbar"><span>Showing: <b>{drillLabel}</b></span><button className="btn btn-sm" onClick={clearDrill}>Back to Main Dashboard</button></div>
       )}
 
-      {approverDashboard && <ApproverPanel rows={rows} L={L} onDrill={applyDrill} />}
-
       <div className="grid-2">
         <GroupPanel title="Maker-wise completion" col="maker" rows={rows} L={L} onDrill={applyDrill} />
         <LeaderGroupPanel rows={rows} L={L} onDrill={applyDrill} />
@@ -252,6 +250,8 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
         <GroupPanel title="Digital Marketing Leader-wise completion" col="digital_marketing_leader" rows={rows} L={L} onDrill={applyDrill} />
         <GroupPanel title="Brand Checker-wise completion" col="brand_checker" rows={rows} L={L} onDrill={applyDrill} />
       </div>
+
+      {approverDashboard && <ApproverPanel rows={rows} L={L} onDrill={applyDrill} />}
 
       {/* ---------- all videos ---------- */}
       <section className="panel" ref={allVideosRef}>

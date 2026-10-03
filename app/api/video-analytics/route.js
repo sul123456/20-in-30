@@ -89,16 +89,11 @@ export async function POST(request) {
       body: JSON.stringify({
         model,
         instructions: SYSTEM_PROMPT,
-        input: [
-          {
-            role: "user",
-            content:
-              "VIDEO DATA (JSON):\n" +
-              JSON.stringify(videos || []) +
-              "\n\nANALYTICS QUESTION:\n" +
-              question,
-          },
-        ],
+        input:
+          "VIDEO DATA (JSON):\n" +
+          JSON.stringify(videos || []) +
+          "\n\nANALYTICS QUESTION:\n" +
+          question,
         max_output_tokens: 1200,
       }),
     });

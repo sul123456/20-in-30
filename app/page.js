@@ -7,7 +7,7 @@ import { APP_TITLE, OCTOBER_STAGES } from "@/config";
 import Dashboard from "@/Dashboard";
 import VideoForm from "@/VideoForm";
 import AdminAudit from "@/AdminAudit";
-import AIAnalytics from "@/ai-analytics-component";
+import AIAnalytics from "./ai-analytics-component";
 
 function identityFromUser(user) {
   return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "";

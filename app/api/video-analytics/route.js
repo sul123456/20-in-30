@@ -20,6 +20,22 @@ STRICT SCOPE:
 - Be concise but useful. Tables and bullets are welcome.
 `;
 
+function extractResponseText(result) {
+  if (typeof result?.output_text === "string" && result.output_text.trim()) {
+    return result.output_text.trim();
+  }
+
+  const parts = [];
+  for (const item of Array.isArray(result?.output) ? result.output : []) {
+    for (const content of Array.isArray(item?.content) ? item.content : []) {
+      if (typeof content?.text === "string" && content.text.trim()) {
+        parts.push(content.text.trim());
+      }
+    }
+  }
+  return parts.join("\n").trim();
+}
+
 export async function POST(request) {
   try {
     const authHeader = request.headers.get("authorization") || "";
@@ -105,9 +121,13 @@ export async function POST(request) {
     }
 
     const result = await aiResponse.json();
-    const answer = String(result?.output_text || "").trim();
+    const answer = extractResponseText(result);
 
     if (!answer) {
+      console.error("Video analytics AI returned no text output:", {
+        status: aiResponse.status,
+        output_items: Array.isArray(result?.output) ? result.output.length : 0,
+      });
       return NextResponse.json({ error: "The analytics agent returned an empty answer." }, { status: 502 });
     }
 

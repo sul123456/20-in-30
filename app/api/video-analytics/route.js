@@ -78,7 +78,7 @@ export async function POST(request) {
       }, { status: 503 });
     }
 
-    const model = process.env.OPENAI_MODEL || "gpt-5-mini";
+    const model = process.env.OPENAI_MODEL || "gpt-6-luna";
 
     const aiResponse = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -88,9 +88,8 @@ export async function POST(request) {
       },
       body: JSON.stringify({
         model,
-        input: [
-          { role: "system", content: SYSTEM_PROMPT },
-          {
+        instructions: SYSTEM_PROMPT,
+        input: {
             role: "user",
             content:
               "VIDEO DATA (JSON):\n" +
@@ -99,6 +98,7 @@ export async function POST(request) {
               question,
           },
         ],
+        max_output_tokens: 1200,
       }),
     });
 

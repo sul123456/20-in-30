@@ -7,6 +7,7 @@ import { APP_TITLE, OCTOBER_STAGES } from "@/config";
 import Dashboard from "@/Dashboard";
 import VideoForm from "@/VideoForm";
 import AdminAudit from "@/AdminAudit";
+import AIAnalytics from "@/AIAnalytics";
 
 function identityFromUser(user) {
   return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "";
@@ -145,6 +146,7 @@ export default function Home() {
               <div className="auth-mini">
                 <span title={user.email || ""}>Signed in: {identity}</span>
                 <button className="btn btn-sm" type="button" onClick={signOut}>Sign out</button>
+                {isAdmin && <AIAnalytics user={user} />}
               </div>
             )}
           </div>

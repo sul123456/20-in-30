@@ -1,5 +1,11 @@
 
-.ai-analytics-trigger { margin-left: 8px; }
+.ai-analytics-trigger {
+  margin-left: 8px;
+  display: inline-flex !important;
+  align-items: center;
+  visibility: visible !important;
+  white-space: nowrap;
+}
 .ai-analytics-backdrop {
   position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.28);
   display: flex; align-items: flex-end; justify-content: flex-end; padding: 20px;

@@ -141,12 +141,12 @@ export default function Home() {
               <button role="tab" className="tab tab-oct" aria-selected={tab === "october"} onClick={() => goTab("october")}>October Dashboard</button>
               <button role="tab" className="tab" aria-selected={tab === "update"} onClick={updateTab}>Add / Update</button>
               {isAdmin && <button role="tab" className="tab tab-admin" aria-selected={tab === "audit"} onClick={() => goTab("audit")}>Admin Audit</button>}
+              {isAdmin && <AIAnalytics user={user} />}
             </nav>
             {authReady && user && (
               <div className="auth-mini">
                 <span title={user.email || ""}>Signed in: {identity}</span>
                 <button className="btn btn-sm" type="button" onClick={signOut}>Sign out</button>
-                {isAdmin && <AIAnalytics user={user} />}
               </div>
             )}
           </div>

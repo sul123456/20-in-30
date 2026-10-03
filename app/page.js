@@ -7,6 +7,7 @@ import { APP_TITLE, OCTOBER_STAGES } from "@/config";
 import Dashboard from "@/Dashboard";
 import VideoForm from "@/VideoForm";
 import AdminAudit from "@/AdminAudit";
+import AIAnalytics from "./ai-analytics-component";
 
 function identityFromUser(user) {
   return user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "";
@@ -141,6 +142,7 @@ export default function Home() {
               <button role="tab" className="tab" aria-selected={tab === "update"} onClick={updateTab}>Add / Update</button>
               {isAdmin && <button role="tab" className="tab tab-admin" aria-selected={tab === "audit"} onClick={() => goTab("audit")}>Admin Audit</button>}
             </nav>
+            {isAdmin && <AIAnalytics user={user} />}
             {authReady && user && (
               <div className="auth-mini">
                 <span title={user.email || ""}>Signed in: {identity}</span>

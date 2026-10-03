@@ -89,7 +89,8 @@ export async function POST(request) {
       body: JSON.stringify({
         model,
         instructions: SYSTEM_PROMPT,
-        input: {
+        input: [
+          {
             role: "user",
             content:
               "VIDEO DATA (JSON):\n" +

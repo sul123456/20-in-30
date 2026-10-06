@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { STAGES, DURATIONS, LIST_FIELDS } from "./config";
+import { STAGES, OCTOBER_STAGES, DURATIONS, LIST_FIELDS } from "./config";
 import { monthLabel, thisMonth, pctText, fmtWhen } from "./logic";
 import { Badge } from "./ui";
 import { supabase } from "./supabase";
@@ -90,8 +90,10 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
     setMode("new"); setEditingId(null); setOriginal(f); setForm(f); setAdding({}); setComment(""); setErr("");
   }
   function startEdit(v) {
-    const f = toForm(v, stages);
+    const editStages = v?.month === "2026-10" ? OCTOBER_STAGES : STAGES;
+    const f = toForm(v, editStages);
     setMode("edit"); setEditingId(v.id); setOriginal({ ...f, _stamp: v.updated_at }); setForm(f); setAdding({}); setComment(""); setErr("");
+    if (onMonthChange) onMonthChange(v?.month || thisMonth());
     window.scrollTo(0, 0);
   }
   const set = (k, val) => { setForm((f) => ({ ...f, [k]: val })); if (k === "month" && onMonthChange) onMonthChange(val); };

@@ -151,7 +151,7 @@ export async function POST(request) {
       }, { status: 503 });
     }
 
-    const model = process.env.OPENAI_MODEL || "gpt-6-luna";
+    const model = process.env.OPENAI_MODEL || "gpt-5.1";
     const aiResponse = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -166,7 +166,7 @@ export async function POST(request) {
           JSON.stringify(videos || []) +
           "\n\nANALYTICS QUESTION:\n" +
           question,
-        max_output_tokens: 2000,
+        max_output_tokens: 4000,
       }),
     });
 
@@ -177,7 +177,10 @@ export async function POST(request) {
     }
 
     const result = await aiResponse.json();
-    const answer = extractResponseText(result);
+    let answer = extractResponseText(result);
+    if (!answer && result?.status === "incomplete" && result?.incomplete_details?.reason === "max_output_tokens") {
+      return NextResponse.json({ error: "The analytics answer exceeded the model output limit. Please retry with a narrower question." }, { status: 502 });
+    }
 
     if (!answer) {
       console.error("Video analytics AI returned no text output:", {

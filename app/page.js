@@ -34,7 +34,7 @@ export default function Home() {
   const { videos, statuses, loading, error, live, reload, saveVideo, loadHistory, loadAudit } = useTracker();
   const L = useMemo(() => makeLogic(statuses), [statuses]);
   const LOct = useMemo(() => makeLogic(statuses, OCTOBER_STAGES), [statuses]);
-  const [tab, setTab] = useState("september");
+  const [tab, setTab] = useState("october");
   const [openId, setOpenId] = useState(null);
   const [editMonth, setEditMonth] = useState("2026-09");
   const [user, setUser] = useState(null);
@@ -74,7 +74,7 @@ export default function Home() {
     else if (p.get("tab") === "update") setTab("update");
     else if (p.get("tab") === "october") setTab("october");
     else if (p.get("tab") === "audit") setTab("audit");
-    else setTab("september");
+    else setTab("october");
   }, []);
 
   useEffect(() => {
@@ -105,7 +105,7 @@ export default function Home() {
 
   const signOut = async () => {
     if (supabase) await supabase.auth.signOut();
-    setTab("september");
+    setTab("october");
     setOpenId(null);
   };
 

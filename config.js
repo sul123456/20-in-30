@@ -21,7 +21,7 @@ export const STAGES = [
   { col: "stage_legal",          label: "Self Legal Approval",       short: "Self legal",            group: "Production",     weight: 5 },
   { col: "stage_first_cut",      label: "1st cut",                   short: "1st cut",               group: "Production",     weight: 15 },
   { col: "stage_brand_approval", label: "Brand approval on film",    short: "Brand approval on film",group: "Production",     weight: 5 },
-  { col: "stage_all_edits",      label: "All edits delivered",       short: "All edits delivered",   group: "Production",     weight: 15 },
+  { col: "stage_all_edits",      label: "All edits delivered to digital FPR/leader",       short: "All edits delivered to digital FPR/leader",   group: "Production",     weight: 15 },
   { col: "stage_go_live",        label: "Go Live",                   short: "Go Live",               group: "Production",     weight: 5 },
 ];
 
@@ -62,7 +62,7 @@ export const OCTOBER_STAGES = [
   { col: "stage_legal", label: "Self Legal Approval", short: "Self legal", group: "Production", weight: 5 },
   { col: "stage_first_cut", label: "1st cut", short: "1st cut", group: "Production", weight: 15 },
   { col: "stage_brand_approval", label: "Brand approval on film", short: "Brand approval on film", group: "Production", weight: 5 },
-  { col: "stage_all_edits", label: "All edits delivered", short: "All edits delivered", group: "Production", weight: 15 },
+  { col: "stage_all_edits", label: "All edits delivered to digital FPR/leader", short: "All edits delivered to digital FPR/leader", group: "Production", weight: 15 },
   { col: "stage_go_live", label: "Go Live", short: "Go Live", group: "Production", weight: 5 },
 ];
 

@@ -490,9 +490,9 @@ function ApproverPanel({ rows, L, onDrill }) {
   </section>;
 }
 function leaderForVideo(v) {
-  // October leader ownership comes directly from the latest uploaded October data.
-  // Other months retain the legacy maker-to-leader mapping.
-  if (v.month === "2026-10") return String(v.leader || "").trim() || "Not mapped";
+  // October and November use the leader assigned in their uploaded master sheets.
+  // September retains its original maker-to-leader mapping.
+  if (v.month === "2026-10" || v.month === "2026-11") return String(v.leader || "").trim() || "Not mapped";
   return MAKER_LEADER_MAPPING[v.maker] || "Not mapped";
 }
 

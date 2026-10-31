@@ -165,13 +165,13 @@ export default function Home() {
         {loading ? (
           <div className="loading">Loading the tracker…</div>
         ) : tab === "september" ? (
-          <Dashboard videos={videos} statuses={statuses} L={L} loadHistory={loadHistory} month="2026-09" title="September Dashboard"
+          <Dashboard key={tab} videos={videos} statuses={statuses} L={L} loadHistory={loadHistory} month="2026-09" title="September Dashboard"
             onEdit={(id) => { setEditMonth("2026-09"); setOpenId(id); goTab("update"); }} />
         ) : tab === "november" ? (
-          <Dashboard videos={videos} statuses={statuses} L={LOct} stages={OCTOBER_STAGES} month="2026-11" title="November Dashboard" approverDashboard loadHistory={loadHistory}
+          <Dashboard key={tab} videos={videos} statuses={statuses} L={LOct} stages={OCTOBER_STAGES} month="2026-11" title="November Dashboard" approverDashboard loadHistory={loadHistory}
             onEdit={(id) => { setEditMonth("2026-11"); setOpenId(id); goTab("update"); }} />
         ) : tab === "october" ? (
-          <Dashboard videos={videos} statuses={statuses} L={LOct} stages={OCTOBER_STAGES} month="2026-10" title="October Dashboard" approverDashboard loadHistory={loadHistory}
+          <Dashboard key={tab} videos={videos} statuses={statuses} L={LOct} stages={OCTOBER_STAGES} month="2026-10" title="October Dashboard" approverDashboard loadHistory={loadHistory}
             onEdit={(id) => { setEditMonth("2026-10"); setOpenId(id); goTab("update"); }} />
         ) : tab === "audit" ? (
           <AdminAudit user={user} audit={audit} loading={auditLoading} error={auditError} reload={refreshAudit} />

@@ -34,9 +34,9 @@ export default function Home() {
   const { videos, statuses, loading, error, live, reload, saveVideo, loadHistory, loadAudit } = useTracker();
   const L = useMemo(() => makeLogic(statuses), [statuses]);
   const LOct = useMemo(() => makeLogic(statuses, OCTOBER_STAGES), [statuses]);
-  const [tab, setTab] = useState("october");
+  const [tab, setTab] = useState("november");
   const [openId, setOpenId] = useState(null);
-  const [editMonth, setEditMonth] = useState("2026-09");
+  const [editMonth, setEditMonth] = useState("2026-11");
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
   const [authError, setAuthError] = useState("");
@@ -73,8 +73,9 @@ export default function Home() {
     if (p.get("video")) setTab("update");
     else if (p.get("tab") === "update") setTab("update");
     else if (p.get("tab") === "october") setTab("october");
+    else if (p.get("tab") === "november") setTab("november");
     else if (p.get("tab") === "audit") setTab("audit");
-    else setTab("october");
+    else setTab("november");
   }, []);
 
   useEffect(() => {
@@ -105,7 +106,7 @@ export default function Home() {
 
   const signOut = async () => {
     if (supabase) await supabase.auth.signOut();
-    setTab("october");
+    setTab("november");
     setOpenId(null);
   };
 
@@ -139,6 +140,7 @@ export default function Home() {
             <nav className="tabs" role="tablist">
               <button role="tab" className="tab" aria-selected={tab === "september"} onClick={() => goTab("september")}>September Dashboard</button>
               <button role="tab" className="tab tab-oct" aria-selected={tab === "october"} onClick={() => goTab("october")}>October Dashboard</button>
+              <button role="tab" className="tab tab-oct" aria-selected={tab === "november"} onClick={() => goTab("november")}>November Dashboard</button>
               <button role="tab" className="tab" aria-selected={tab === "update"} onClick={updateTab}>Add / Update</button>
               {isAdmin && <button role="tab" className="tab tab-admin" aria-selected={tab === "audit"} onClick={() => goTab("audit")}>Admin Audit</button>}
             </nav>
@@ -165,6 +167,9 @@ export default function Home() {
         ) : tab === "september" ? (
           <Dashboard videos={videos} statuses={statuses} L={L} loadHistory={loadHistory} month="2026-09" title="September Dashboard"
             onEdit={(id) => { setEditMonth("2026-09"); setOpenId(id); goTab("update"); }} />
+        ) : tab === "november" ? (
+          <Dashboard videos={videos} statuses={statuses} L={LOct} stages={OCTOBER_STAGES} month="2026-11" title="November Dashboard" approverDashboard loadHistory={loadHistory}
+            onEdit={(id) => { setEditMonth("2026-11"); setOpenId(id); goTab("update"); }} />
         ) : tab === "october" ? (
           <Dashboard videos={videos} statuses={statuses} L={LOct} stages={OCTOBER_STAGES} month="2026-10" title="October Dashboard" approverDashboard loadHistory={loadHistory}
             onEdit={(id) => { setEditMonth("2026-10"); setOpenId(id); goTab("update"); }} />
@@ -175,7 +180,7 @@ export default function Home() {
         ) : !user ? (
           <SignInPrompt onSignIn={signIn} error={authError} signingIn={signingIn} />
         ) : (
-          <VideoForm videos={videos} statuses={statuses} L={editMonth === "2026-10" ? LOct : L} stages={editMonth === "2026-10" ? OCTOBER_STAGES : undefined} october={editMonth === "2026-10"} saveVideo={saveVideo}
+          <VideoForm videos={videos} statuses={statuses} L={["2026-10","2026-11"].includes(editMonth) ? LOct : L} stages={["2026-10","2026-11"].includes(editMonth) ? OCTOBER_STAGES : undefined} october={["2026-10","2026-11"].includes(editMonth)} saveVideo={saveVideo}
             openId={openId} onOpenHandled={() => setOpenId(null)} identity={identity} isAdmin={isAdmin} onMonthChange={(m) => setEditMonth(m)} />
         )}
       </main>

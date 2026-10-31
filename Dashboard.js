@@ -56,7 +56,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
       if (drill.kind === "approver" && (v.brand_checker || v.brand_approver || OCTOBER_APPROVERS[v.feature] || "Not assigned") !== drill.value) return false;
     }
     return true;
-  }), [videos, filters, L, drill]);
+  }), [videos, filters, L, drill, month]);
 
   // ---------- numbers (all calculated from the live Supabase rows) ----------
   const counts = { Completed: 0, "In Progress": 0, Pending: 0, Overdue: 0 };

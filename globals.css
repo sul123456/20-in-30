@@ -397,3 +397,10 @@ td.n, th.n { text-align: right; width: 1%; }
   .card, .dashboard, .dashboard-wrap { min-width: 0; max-width: 100%; }
   table { max-width: none; }
 }
+
+/* Mobile workflow statuses: consistent touch targets, no stray tiny fifth pill. */
+@media (max-width: 640px) {
+  .stage-row .chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; }
+  .stage-row .chips .chip { width: 100%; min-width: 0; min-height: 44px; padding: 9px 7px; font-size: 13px; text-align: center; white-space: normal; }
+  .stage-row .chips .chip:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}

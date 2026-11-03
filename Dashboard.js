@@ -8,6 +8,19 @@ import * as XLSX from "xlsx";
 const EMPTY_FILTERS = { month: "", product: "", maker: "", agency: "", digital_fpr: "", brand_checker: "", status: "", liveFrom: "", liveTo: "" };
 const OVERALL = ["Completed", "In Progress", "Pending", "Overdue"];
 
+// Milestones use live workflow statuses, never inferred from a video's overall completion.
+const MILESTONES = [
+  { key: "script", title: "Script approval", day: "05", detail: "Brand + Product + BCO approved" },
+  { key: "storyboard", title: "Storyboard approval", day: "15", detail: "Storyboarding marked Done" },
+  { key: "firstCut", title: "First-cut video", day: "20", detail: "First cut marked Done" },
+];
+function milestoneDone(v, key, isDone) {
+  if (key === "script") return ["stage_brand_script", "stage_product_script", "stage_bco_script"].every((col) => isDone(v[col]));
+  if (key === "storyboard") return isDone(v.stage_storyboarding);
+  if (key === "firstCut") return isDone(v.stage_first_cut);
+  return false;
+}
+
 export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit, loadHistory, month, title = "Dashboard", approverDashboard = false }) {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [showFilters, setShowFilters] = useState(true);
@@ -45,6 +58,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     if (f.liveTo && !(v.go_live_date && v.go_live_date <= f.liveTo)) return false;
     if (drill) {
       if (drill.kind === "status" && L.overall(v) !== drill.value) return false;
+      if (drill.kind === "milestone" && milestoneDone(v, drill.key, L.isDone) !== (drill.state === "done")) return false;
       if (drill.kind === "wentLive" && !L.isDone(v.stage_go_live)) return false;
       if (drill.kind === "leader" && leaderForVideo(v) !== drill.value) return false;
       if (drill.kind === "group" && (v[drill.col] || "Not set") !== drill.value) return false;
@@ -67,6 +81,7 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
   const activeFilters = Object.values(filters).filter(Boolean).length;
   const drillLabel = drill ? (
     drill.kind === "status" ? drill.value :
+    drill.kind === "milestone" ? `${MILESTONES.find((m) => m.key === drill.key)?.title || "Milestone"} — ${drill.state === "done" ? "completed" : "remaining"}` :
     drill.kind === "wentLive" ? "Went live" :
     drill.kind === "leader" ? `Leader: ${drill.value}` :
     drill.kind === "group" ? `${drill.label}: ${drill.value}` :
@@ -176,6 +191,14 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
     <th><button className="sortbtn" data-active={sort.field === field} onClick={() => sortBy(field)}>{children} {sort.field === field ? (sort.dir === "asc" ? "↑" : "↓") : ""}</button></th>
   );
   const today = todayISO();
+  const milestoneMonth = month || today.slice(0, 7);
+  const milestoneProgress = MILESTONES.map((m) => {
+    const done = rows.filter((v) => milestoneDone(v, m.key, L.isDone)).length;
+    const due = `${milestoneMonth}-${m.day}`;
+    return { ...m, done, remaining: rows.length - done, total: rows.length, due,
+      dueLabel: fmtDate(due).replace(/,? \d{4}$/, ""),
+      deadlinePassed: today > due, dueToday: today === due };
+  });
   const isOctober = month === "2026-10";
 
   return (
@@ -212,6 +235,36 @@ export default function Dashboard({ videos, statuses, L, stages = STAGES, onEdit
         <button type="button" className="kpi k-over k-clickable" onClick={() => applyDrill({ kind: "status", value: "Overdue" })} title="Show overdue videos"><div className="v num">{counts.Overdue}</div><div className="l">Overdue</div></button>
         <button type="button" className="kpi k-live k-clickable" onClick={() => applyDrill({ kind: "wentLive" })} title="Show videos that went live"><div className="v num">{wentLive}</div><div className="l">Went live</div></button>
         <button type="button" className="kpi k-pct k-clickable" onClick={() => applyDrill(null)} title="Show all videos"><div className="v num">{pctText(completedPct)}</div><div className="l">Completion</div></button>
+      </section>
+
+      {/* ---------- senior-management production milestones ---------- */}
+      <section className="milestones-section" aria-label="Production milestone tracker">
+        <div className="milestones-heading">
+          <h3>Production milestone tracker</h3>
+          <span>Live progress against the 5th, 15th and 20th · Select a count to drill down</span>
+        </div>
+        <div className="milestones-grid">
+          {milestoneProgress.map((m) => (
+            <div className="milestone-card" key={m.key}>
+              <div className="milestone-title">{m.title}</div>
+              <div className="milestone-due">Target: {m.dueLabel}</div>
+              <button type="button" className="milestone-approved" onClick={() => applyDrill({ kind: "milestone", key: m.key, state: "done" })}
+                title={`View ${m.done} videos completed at ${m.title.toLowerCase()}`}>
+                <strong className="num">{m.done}</strong><span className="num">/ {m.total}</span><span className="milestone-approved-label">completed ↗</span>
+              </button>
+              <div className="milestone-track" aria-hidden="true"><span style={{ width: (m.total ? 100 * m.done / m.total : 0) + "%" }} /></div>
+              <div className="milestone-footer">
+                <span className="num">{m.total ? Math.round(100 * m.done / m.total) : 0}% achieved</span>
+                <button type="button" className="milestone-remaining" onClick={() => applyDrill({ kind: "milestone", key: m.key, state: "remaining" })}
+                  title={`View ${m.remaining} videos still pending ${m.title.toLowerCase()}`}>{m.remaining} remaining ↗</button>
+              </div>
+              <div className={`milestone-deadline ${m.remaining === 0 ? "achieved" : m.deadlinePassed ? "late" : ""}`}>
+                {m.remaining === 0 ? "Target achieved" : m.deadlinePassed ? `${m.remaining} overdue against target` : m.dueToday ? "Deadline today" : `Deadline: ${m.dueLabel}`}
+              </div>
+              <div className="milestone-detail">{m.detail}</div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* ---------- filters ---------- */}

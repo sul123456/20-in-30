@@ -271,7 +271,7 @@ export default function VideoForm({ videos, statuses, L, saveVideo, openId, onOp
           {stages.map((s, i) => {
             const cur = form[s.col];
             const opts = (october && s.col === "stage_ai_addendum") ? [...statusNames, "Not Applicable"].filter((x,i,a)=>a.indexOf(x)===i) : statusNames.filter((x) => x !== "Not Applicable");
-            const safeOpts = (opts.includes(cur) ? opts : [...opts, cur]).filter((option) => typeof option === "string" && option.trim().length > 0);
+            // Keep the Done action present even if the status lookup briefly omits it.\n            const safeOpts = [...new Set([...opts, "Done", cur])].filter((option) => typeof option === "string" && option.trim().length > 0);
             const head = i === 0 || stages[i - 1].group !== s.group;
             return (
               <div key={s.col}>

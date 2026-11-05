@@ -403,6 +403,9 @@ td.n, th.n { text-align: right; width: 1%; }
   .stage-row .chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; }
   .stage-row .chips .chip { width: 100%; min-width: 0; min-height: 44px; padding: 9px 7px; font-size: 13px; text-align: center; white-space: normal; }
   .stage-row .chips .chip:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  /* Done is the most-used action: keep it in the first visible row on phones,\n     above the persistent Save update footer rather than at the clipped bottom. */
+  .stage-row .chips .chip.c-done { order: -1; }
+  .stage-row { scroll-margin-bottom: 120px; }
 }
 
 /* ---------- executive production milestone tracker ---------- */
